@@ -16,6 +16,7 @@ var FlowDiagramView =  Backbone.View.extend({
             None: "",
             Statement: "StatementBlock",
             If: "IF",
+            Try: "TryBlock",
             Loop: "LOOP",
         };
 
@@ -389,11 +390,29 @@ var FlowDiagramView =  Backbone.View.extend({
                                                             alignment: go.Spot.Center }),
                                                     )));
 
+        var tryCollapseGroupTemplate = this.$go(go.Group, "Auto",
+                                            {
+                                                layout: this.$go(go.TreeLayout, { angle: 90 }),
+                                                                    isSubGraphExpanded: false,
+                                                                    subGraphExpandedChanged: this.subGraphExpandedChanged
+                                            },
+                                            this.$go(go.Shape, "Rectangle",
+                                                        { width: 150, height: 50, parameter1: 5, fill: "rgba(128,128,128,0.33)" }),
+                                            this.$go(go.Panel, "Vertical", { defaultAlignment: go.Spot.Left },
+                                                        this.$go(go.Panel, "Horizontal",
+                                                                { defaultAlignment: go.Spot.Top },
+                                                                this.$go("SubGraphExpanderButton"), 
+                                                                this.$go(go.TextBlock, 
+                                                                        { font: "Bold 12pt Sans-Serif", text: "Try", verticalAlignment: go.Spot.Center,
+                                                                        alignment: go.Spot.Center }),
+                                                                )));
+
         var groupTemplateMap = new go.Map("string", go.Group);
         //TODO: 블럭 템플릿 추가 작성
         groupTemplateMap.add(this.blockType.None, defaultGroupTemplate);
         groupTemplateMap.add(this.blockType.Statement, collapseGroupTemplate);
         groupTemplateMap.add(this.blockType.If, ifCollapseGroupTemplate);
+        groupTemplateMap.add(this.blockType.Try, tryCollapseGroupTemplate)
         this.diagram.groupTemplateMap = groupTemplateMap;
     },
 
@@ -583,6 +602,8 @@ var FlowDiagramView =  Backbone.View.extend({
                 return router.currentView.contentView.blockType.If;
             case "SWITCH":
                 return router.currentView.contentView.blockType.Switch;
+            case "TryBlock":
+                return router.currentView.contentView.blockType.Try;
             default: 
                 return router.currentView.contentView.blockType.Statement;
         }
@@ -667,7 +688,7 @@ var FlowDiagramView =  Backbone.View.extend({
 
     initNode: function() {
 
-        var object_id = "6";
+        var object_id = "2";
         this.generateData();
         this.makeBlock(object_id);
         this.makeLink(object_id);
