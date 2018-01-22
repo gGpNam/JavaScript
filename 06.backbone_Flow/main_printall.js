@@ -16,16 +16,12 @@ var FlowDiagramView =  Backbone.View.extend({
             None: "",
             Statement: "StatementBlock",
             If: "IF",
-            LoopWhile: "LOOP_while",
-            LoopFor: "LOOP_for",
-            LoopDo: "LOOP_do",
-            TryCatchFinally: "TryCatchFinally",
             Try: "TryBlock",
-            CatchList: "CatchList",
-            CatchBlock: "CatchBlock"
+            LoopWhile: "LOOP_while",
+            //LoopFor: "LOOP_for",
+            LoopDo: "LOOP_do"
         };
 
-        // 
         this.nodeType = {
                 Start: "Start",
                 End: "End",
@@ -37,14 +33,14 @@ var FlowDiagramView =  Backbone.View.extend({
                 Return: "Return",
                 Goto: "Goto",
                 Continue: "Continue",
-                Break: "Break",
+                Break: "Break"
         };
 
         this.spotType = {
-            Top: "Top",
-            Buttom: "Buttom",
-            Left: "Left",
-            Right: "Right"
+            Top: "T",
+            Buttom: "B",
+            Left: "L",
+            Right: "R"
         };
     },
 
@@ -62,7 +58,7 @@ var FlowDiagramView =  Backbone.View.extend({
         nodeColor: "DarkRed",
         nodeWidth: 140,
         nodeMinWidth: 80,
-        nodesWidthSpacing : 10,
+        nodesWidthSpacing : 140,
         nodesHeightSpacing : 30,
         diagramPaddingTop: 70
     },
@@ -90,7 +86,7 @@ var FlowDiagramView =  Backbone.View.extend({
         // the port is basically just a small circle that has a white stroke when it is made visible
         return this.$go(go.Shape, "Circle",
                  {
-                    fill: "Black",  //transparent/ declare whether
+                    fill: "transparent",
                     stroke: null,  // this is changed to "white" in the showPorts function
                     desiredSize: new go.Size(8, 8),
                     alignment: spot, alignmentFocus: spot,  // align the port on the main Shape
@@ -123,21 +119,18 @@ var FlowDiagramView =  Backbone.View.extend({
                 "undoManager.isEnabled": true,
                 "animationManager.isEnabled": false,
                 allowCopy: false,
-                allowDelete: false,
+                allowDelete: true,
                 allowRelink: false,
                 padding: new go.Margin(this.properties.diagramPaddingTop, 5, 5, 5),
                 //resizingTool: new fnResizeMultipleTool(),
-                layout: this.$go(go.LayeredDigraphLayout, {
-                    direction: 90,
-                    layerSpacing: 10,
-                    columnSpacing: 6,
-                    setsPortSpots: false,
-                    isRealtime: false
+                layout: this.$go(go.TreeLayout, {
+                    angle: 90,
+                    //setsPortSpot: false,
                     //setsChildPortSpot: false,
                     //treeStyle: go.TreeLayout.StyleLayered,
                     //nodeSpacing: router.currentView.contentView.properties.nodesHeightSpacing,
                     //layerSpacing: router.currentView.contentView.properties.nodesWidthSpacing,
-                    //arrangement: go.TreeLayout.ArrangementHorizontal
+                    arrangement: go.TreeLayout.ArrangementHorizontal
                 })
             };
         this.diagram = this.$go(go.Diagram, targetEl, diagramOptions);
@@ -206,7 +199,9 @@ var FlowDiagramView =  Backbone.View.extend({
                                                                font: "bold 11pt Helvetica, Arial, sans-serif",
                                                                stroke: "whitesmoke"
                                                            })),
-                                         );
+                                         this.makePort("L", go.Spot.Left, true, false),
+                                         this.makePort("R", go.Spot.Right, true, false),
+                                         this.makePort("B", go.Spot.Bottom, true, false));
 
         var endNodeTemplate = this.$go(go.Node, "Spot",
                                        this.nodeStype(),
@@ -251,41 +246,22 @@ var FlowDiagramView =  Backbone.View.extend({
                                                            {
                                                                font: "bold 11pt Helvetica, Arial, sans-serif",
                                                                stroke: "whitesmoke"
-                                                           })));
-
-        // var startJointNodeTemplate = this.$go(go.Node, "Spot",
-        //                                this.nodeStype(),
-        //                                this.$go(go.Panel, "Auto",
-        //                                         this.$go(go.Shape, "Ellipse",
-        //                                                  {
-        //                                                      minSize: new go.Size(10, 10),
-        //                                                      maxSize: new go.Size(10, 10),
-        //                                                      fill: "whitesmoke",
-        //                                                      stroke: null 
-        //                                                  })));
-
-        // var endJointNodeTemplate = this.$go(go.Node, "Spot",
-        //                                this.nodeStype(),
-        //                                this.$go(go.Panel, "Auto",
-        //                                         this.$go(go.Shape, "Ellipse",
-        //                                                  {
-        //                                                      minSize: new go.Size(10, 10),
-        //                                                      maxSize: new go.Size(10, 10),
-        //                                                      fill: "Red",
-        //                                                      stroke: null 
-        //                                                  })));
+                                                           })),
+                                         this.makePort("L", go.Spot.Left, true, false),
+                                         this.makePort("R", go.Spot.Right, true, false),
+                                         this.makePort("B", go.Spot.Bottom, true, false));
 
         var startJointNodeTemplate = this.$go(go.Node, "Spot",
                                               this.nodeStype(),
-                                              this.$go(go.TextBlock, { stroke: "red" },
+                                              this.$go(go.TextBlock, { stroke: "white" },
                                                        new go.Binding("text", "cid"),
                                                        new go.Binding("visible", "visible")));
 
         var endJointNodeTemplate = this.$go(go.Node, "Spot",
-                                       this.nodeStype(),
-                                       this.$go(go.TextBlock, { stroke: "white" },
+                                              this.nodeStype(),
+                                              this.$go(go.TextBlock, { stroke: "red" },
                                                        new go.Binding("text", "cid"),
-                                                       new go.Binding("visible", "visible"))); 
+                                                       new go.Binding("visible", "visible")));
 
         var templmap = new go.Map("string", go.Node);
 
@@ -314,14 +290,28 @@ var FlowDiagramView =  Backbone.View.extend({
                                                reshapable: true,
                                                resegmentable: true,
                                            },
-                                           //new go.Binding("fromSpot", "fromSpot", go.Spot.parse),
-                                           //new go.Binding("toSpot", "toSpot", go.Spot.parse),
-                                           //new go.Binding("points").makeTwoWay(),
-                                           this.$go(go.Shape),
-                                           this.$go(go.Shape, 
-                                                    { toArrow: "Standard" }),
-                                           this.$go(go.TextBlock),
-                                                    new go.Binding("text", "text"));
+                                           new go.Binding("points").makeTwoWay(),
+                                           this.$go(go.Shape,  // the highlight shape, normally transparent
+                                                   { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
+                                           this.$go(go.Shape,  // the link path shape
+                                                   { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
+                                           this.$go(go.Shape,  // the arrowhead
+                                                   { toArrow: "standard", stroke: null, fill: "gray"}),
+                                           this.$go(go.Panel, "Auto",  // the link label, normally not visible
+                                                   { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5},
+                                                   new go.Binding("visible", "visible").makeTwoWay(),
+                                                   this.$go(go.Shape, "RoundedRectangle",
+                                                            { fill: "#F8F8F8", stroke: null }),
+                                                            this.$go(go.TextBlock, "Yes",
+                                                                     {
+                                                                         textAlign: "center",
+                                                                         font: "10pt helvetica, arial, sans-serif",
+                                                                         stroke: "#333333",
+                                                                         editable: true
+                                                                     },
+                                                                     new go.Binding("text").makeTwoWay())));
+
+                                                            
         var linkTemplateMap = new go.Map("string", go.Link);
 
         linkTemplateMap.add("", defaultLinkTemplate);
@@ -353,32 +343,10 @@ var FlowDiagramView =  Backbone.View.extend({
                                                                 { defaultAlignment: go.Spot.Top  },
                                                                 this.$go("SubGraphExpanderButton"),  // this Panel acts as a Button
                                                                 this.$go(go.TextBlock, 
-                                                                        { font: "Bold 10pt Sans-Serif"}),
+                                                                        { font: "Bold 12pt Sans-Serif", }),
                                                                 ),
                                                     this.$go(go.Placeholder,
                                                                 { padding: new go.Margin(0, 10) })));
-                                                        
-        var catchBlockTemplate = this.$go(go.Group, "Auto",
-                                            {
-                                                layout: this.$go(go.TreeLayout, { angle: 90 }),
-                                                                    isSubGraphExpanded: true,
-                                                                    subGraphExpandedChanged: this.subGraphExpandedChanged
-                                            },
-                                            this.$go(go.Shape, "RoundedRectangle",  // surrounds everything
-                                                        { parameter1: 10, fill: "rgba(128,128,128,0.33)" }),
-                                            this.$go(go.Panel, "Vertical",  { defaultAlignment: go.Spot.Left },
-                                                    this.$go(go.Panel, "Horizontal", // the header
-                                                                { defaultAlignment: go.Spot.Top  },
-                                                                this.$go("SubGraphExpanderButton"),  // this Panel acts as a Button
-                                                                this.$go(go.TextBlock, 
-                                                                        { font: "Bold 10pt Sans-Serif"},
-                                                                        new go.Binding("text", "name"),
-                                                                        new go.Binding("visible", "visible")
-                                                                    ),
-                                                                ),
-                                                    this.$go(go.Placeholder,
-                                                                { padding: new go.Margin(0, 10) })));
-
 
         var collapseGroupTemplate = this.$go(go.Group, "Auto",
                                             {
@@ -452,7 +420,6 @@ var FlowDiagramView =  Backbone.View.extend({
         var groupTemplateMap = new go.Map("string", go.Group);
         //TODO: 블럭 템플릿 추가 작성
         groupTemplateMap.add(this.blockType.None, defaultGroupTemplate);
-        groupTemplateMap.add(this.blockType.CatchBlock, catchBlockTemplate);
         groupTemplateMap.add(this.blockType.Statement, collapseGroupTemplate);
         groupTemplateMap.add(this.blockType.If, ifCollapseGroupTemplate);
         groupTemplateMap.add(this.blockType.Try, tryCollapseGroupTemplate)
@@ -513,7 +480,6 @@ var FlowDiagramView =  Backbone.View.extend({
         });
     },
 
-    // #region data generate
     initBlockData: function() {
         _.each(FC.block, function(block) {
             var object =  _.find(router.currentView.contentView.FlowChartTreeData, { oid: block.oid} );
@@ -554,23 +520,21 @@ var FlowDiagramView =  Backbone.View.extend({
         _.each(router.currentView.contentView.FlowChartTreeData, function(object){
             _.each(object.block, function(block) {
                 _.each(block.node, function(node) {
-                    var edgeDataList  = _.filter(FC.edge, { fnid: node.nid });
-                    if(_.isUndefined(edgeDataList))
+                    var edgeData = _.find(FC.edge, { fnid: node.nid });
+                    if(_.isUndefined(edgeData))
                         return;
 
-                    _.each(edgeDataList, function(edgeData) {
-                        var fromBlock = router.currentView.contentView.findBlockOfNode(edgeData.fnid);
-                        var toBlock = router.currentView.contentView.findBlockOfNode(edgeData.tnid);
-    
-                        if(_.isUndefined(fromBlock))
-                             return;
-    
-                        edgeData.category = router.currentView.contentView.getNodeType(node.ntp);
-                        edgeData.fromBid = fromBlock.bid;
-                        edgeData.toBid = toBlock.bid;
-    
-                        node.edge.push(edgeData);
-                    })
+                    var fromBlock = router.currentView.contentView.findBlockOfNode(edgeData.fnid);
+                    var toBlock = router.currentView.contentView.findBlockOfNode(edgeData.tnid);
+
+                    if(_.isUndefined(fromBlock))
+                         return;
+
+                    edgeData.category = router.currentView.contentView.getNodeType(node.ntp);
+                    edgeData.fromBid = fromBlock.bid;
+                    edgeData.toBid = toBlock.bid;
+
+                    node.edge.push(edgeData);
                 });
             });
         });
@@ -590,7 +554,6 @@ var FlowDiagramView =  Backbone.View.extend({
         console.log("############# <END> #############");
     },
 
-    
     findObject: function(objectId) {
         return _.find(router.currentView.contentView.FlowChartTreeData, { oid: objectId } );
     },
@@ -616,19 +579,7 @@ var FlowDiagramView =  Backbone.View.extend({
                 });
             })
         });
-        return node;
-    },
-
-    // 노드가 호출 당하는 EDGE ID
-    findCallingNodeId: function(nid) {
-        var edge = _.filter(FC.edge, { tnid: nid });
-        return edge[0].fnid;
-    },
-
-    // 노드가 호출하는 EDGE ID
-    findCalleeNodeId: function(nid) {
-        var edge = _.filter(FC.edge, { tnid: nid });
-        return edge[0].fnid;
+        return block;
     },
 
     findBlockOfNode: function(nid) {
@@ -645,7 +596,7 @@ var FlowDiagramView =  Backbone.View.extend({
         return block;
     },
 
-    // 블럭에 포함된 노드의 링크 정보를 보낸다. DUPLICATED
+    // 블럭에 포함된 노드의 링크 정보를 보낸다.
     findLink: function(blockId) {
         var linkList = [];
 
@@ -667,9 +618,6 @@ var FlowDiagramView =  Backbone.View.extend({
         });
     },
 
-    // #endregion
-
-    // BOOKMARK: MAKE > makeBlock    
     makeBlock: function(objectId) {
         var object =  this.findObject(objectId);
         var rootBlock = _.find(object.block, { pbid: "-1"});
@@ -677,8 +625,6 @@ var FlowDiagramView =  Backbone.View.extend({
         if(_.isUndefined(rootBlock))
             return;
 
-        this.makeStartNode();
-        this.makeEndNode();
         this.makeStartLink(rootBlock);
         this.makeEndLink(rootBlock);
 
@@ -690,13 +636,7 @@ var FlowDiagramView =  Backbone.View.extend({
             blockCell.group = block.pbid;
             blockCell.name = block.btp;
             blockCell.type = router.currentView.contentView.getBlockType(block.btp);
-            
-            if(blockCell.type ===  router.currentView.contentView.blockType.CatchBlock) {
-                blockCell.category = router.currentView.contentView.blockType.CatchBlock;
-            } else {
-                blockCell.category = router.currentView.contentView.blockType.None;
-            }
-
+            blockCell.category = router.currentView.contentView.blockType.None;
             router.currentView.contentView.FlowChartData.push(blockCell);
 
             // rootBlock
@@ -706,6 +646,9 @@ var FlowDiagramView =  Backbone.View.extend({
                 router.currentView.contentView.makeNode(blockCell);
             }
         });
+
+        this.makeStartNode();
+        this.makeEndNode();
     },
 
     // BOOKMARK: MAKE > makeNode
@@ -714,41 +657,22 @@ var FlowDiagramView =  Backbone.View.extend({
             if(_.isUndefined(block)) 
                 return;
 
-        //console.log("^^^^^ " + block.bid + " : " + block.btp + " : " + groupCell.type );
-        
         // TODO: 블럭의 타입별로 데이터/링크를 보정한다.
         switch(groupCell.type) {
             case router.currentView.contentView.blockType.Statement:
                 this.makeStateMentBlock(block);
-                this.makeStatementLink(block);
                 break;
             case router.currentView.contentView.blockType.If:
-                this.makeIfElseBlock(block);
-                this.makeIfElseLink(block);
-                break;
-            case router.currentView.contentView.blockType.LoopWhile:
-                this.makeLoopWhileBlock(block);
-                this.makeLoopWhileLink(block);
-                break;
-            case router.currentView.contentView.blockType.LoopDo:
-                this.makeLoopDoBlock(block);
-                this.makeLoopDoLink(block);
-                break;
-            case router.currentView.contentView.blockType.TryCatchFinally:
-                this.makeTryCatchFinallyBlock(block);
-                this.makeTryCatchFinallyLink(block);
+                this.makeStateMentBlock(block);
                 break;
             case router.currentView.contentView.blockType.Try:
-                this.makeTryBlock(block);
-                this.makeTryLink(block);
+                this.makeStateMentBlock(block);
                 break;
-            case router.currentView.contentView.blockType.CatchList:
-                this.makeCatchListBlock(block);
-                this.makeCatchListLink(block);
+            case router.currentView.contentView.blockType.LoopWhile:
+                this.makeStateMentBlock(block);
                 break;
-            case router.currentView.contentView.blockType.CatchBlock: 
-                this.makeCatchBlock(block);
-                this.makeCatchLink(block);
+            case router.currentView.contentView.blockType.LoopDo:
+                this.makeStateMentBlock(block);
                 break;
             default: 
                 this.makeStateMentBlock(block);
@@ -771,56 +695,39 @@ var FlowDiagramView =  Backbone.View.extend({
     makeStateMentBlock: function(block) {
         // * startJoint, EndJoint 생성하지 않음.
         _.each(block.node, function(node) {
-            var nodeCell = {};
-
             var type = router.currentView.contentView.getNodeType(node.ntp);
-            if(type === router.currentView.contentView.nodeType.StartJoint ||
-               type === router.currentView.contentView.nodeType.EndJoint ) {
-                //nodeCell.visible = false;
-                return;
-               }
+            // if(type === router.currentView.contentView.nodeType.StartJoint ||
+            //    type === router.currentView.contentView.nodeType.EndJoint )
+            //     return;
 
+            var nodeCell = {};
             nodeCell.cid = node.nid;
             nodeCell.isGroup = false;
             nodeCell.group = block.bid;
             nodeCell.category = type;
             nodeCell.name = node.btp;
             router.currentView.contentView.FlowChartData.push(nodeCell);
+
         });
     },
 
-    // #region Statement 
     // BOOKMARK: MAKE > makeStatementLink
     makeStatementLink: function(block) {
         if(_.isUndefined(block))
             return;
 
         _.each(block.node, function(node) {
-            var fromNodeType = router.currentView.contentView.getNodeType(node.ntp);
-           
-            // from노드가 숨겨진 노드면 블럭에서 이동
-            // 마지막 노드가 시작노드로 이동하는 경우 블럭to블럭으로 이동설정
-            if(fromNodeType == router.currentView.contentView.nodeType.EndJoint) {
+            var nodeType = router.currentView.contentView.getNodeType(node.ntp);
+            if(nodeType == router.currentView.contentView.nodeType.EndJoint) {
                 _.each(node.edge, function(edge) {
-                    var toNode = router.currentView.contentView.findNode(edge.tnid);
-                    if( _.isUndefined(toNode))
-                        return;
-
-                    var toNodeType = router.currentView.contentView.getNodeType(toNode.ntp);
                     var link = {};
-
-                    if(router.currentView.contentView.isStartJointType(toNodeType)) {
-                        link.from = edge.fromBid;
-                        link.to = edge.toBid;
-                    } else {
-                        link.from = edge.fromBid;
-                        link.to = edge.tnid; 
-                    }
-
+                    link.from = edge.fromBid;
+                    link.to = edge.toBid;
                     link.fromSpot = router.currentView.contentView.spotType.Buttom;
                     link.toSpot = router.currentView.contentView.spotType.Top;
                     router.currentView.contentView.FlowLinkData.push(link);
                 });
+
             } else 
             {
                 _.each(node.edge, function(edge) {
@@ -832,28 +739,9 @@ var FlowDiagramView =  Backbone.View.extend({
                     router.currentView.contentView.FlowLinkData.push(link);
                 });
             }
-
-            // _.each(node.edge, function(edge) {
-            //         var link = {};
-            //         link.from = edge.fnid;
-            //         link.to = edge.tnid;
-            //         link.fromSpot = router.currentView.contentView.spotType.Buttom;
-            //         link.toSpot = router.currentView.contentView.spotType.Top;
-            //         router.currentView.contentView.FlowLinkData.push(link);
-            //     });
         });
     },
 
-    isStartJointType: function(nodeType) {
-        if(nodeType === this.nodeType.StartJoint || nodeType === this.nodeType.If) {
-            return true;
-        } else {
-            return false;
-        }
-    },
-    // #endregion
-
-    // #region IfElse 
     makeIfElseBlock: function(block) {
         _.each(block.node, function(node) {
             var nodeCell = {};
@@ -867,46 +755,31 @@ var FlowDiagramView =  Backbone.View.extend({
         });
     },
 
+    // BOOKMARK: MAKE > makeIfElseLink
     makeIfElseLink: function(block) {
         if(_.isUndefined(block))
             return;
 
         _.each(block.node, function(node) {
-            var fromNodeType = router.currentView.contentView.getNodeType(node.ntp);
+            _.each(node.edge, function(edge) {
+                var link = {};
+                link.from = edge.fnid;
+                link.to = edge.tnid;
+                //link.from = "p260start";
+                //link.to = "93"; // 판단 ???
 
-            // 마지막 노드가 시작노드로 이동하는 경우 블럭으로 이동설정
-            if(fromNodeType == router.currentView.contentView.nodeType.If ) {
-                _.each(node.edge, function(edge) {
-                    var link = {};
-                    link.from = edge.fnid;
-                    link.to = edge.toBid;
-                    link.fromSpot = router.currentView.contentView.spotType.Buttom;
-                    link.toSpot = router.currentView.contentView.spotType.Top;
-                    router.currentView.contentView.FlowLinkData.push(link);
-                });
-            } else {
-                _.each(node.edge, function(edge) {
-                    var link = {};
-                    link.from = edge.fromBid;
-                    link.to = edge.toBid;
-                    link.fromSpot = router.currentView.contentView.spotType.Buttom;
-                    link.toSpot = router.currentView.contentView.spotType.Top;
-                    router.currentView.contentView.FlowLinkData.push(link);
-                });
-            }
+                link.fromSpot = router.currentView.contentView.spotType.Buttom;
+                link.toSpot = router.currentView.contentView.spotType.Top;
+
+
+                console.log(link.from + "-> " + link.to);
+                router.currentView.contentView.FlowLinkData.push(link);
+            });
         });
     },
-    // endregion
 
-    // #region LoopWhile
-    makeLoopWhileBlock: function(block) {
-        // * conditionNode를 추가한다. 모양은 마름모
-        // * p221start는 Y링크, N링크 데이터를 추가 생성한다. (Y: this- > nextNode, N: this -> EndJoint)
-        // * Statement에서 StartJoint로 이동하는 데이터를 추가
-
-        // nextNode -> endJoint
-        // nextNode -> startJoin
-
+    makeTryCatchBlock: function(block) {
+        // * startJoint 를 추가 한다.
         _.each(block.node, function(node) {
             var nodeCell = {};
             nodeCell.cid = node.nid;
@@ -917,6 +790,47 @@ var FlowDiagramView =  Backbone.View.extend({
 
             router.currentView.contentView.FlowChartData.push(nodeCell);
         });
+    },
+
+    // BOOKMARK MAKE > makeLoopWhileBlock
+    makeLoopWhileBlock: function(block) {
+        // * startJoint 를 추가 한다.
+        // * p221start는 마름모로 모양을 변경한다.
+        // * p221start는 Y링크, N링크 데이터를 추가 생성한다. (Y: this- > nextNode, N: this -> EndJoint)
+        // * Statement에서 StartJoint로 이동하는 데이터를 추가
+
+        // conditionNode -> nextNode  ("Y")
+        // conditionNode - > endJoint ("N")
+        // nextNode -> endJoint
+        // nextNode -> startJoin
+
+        var conditionNode = this.makeLoopConditionNode(block);
+        var nextNode = null;
+
+        _.each(block.node, function(node) {
+            if(_.isNull(nextNode)) {
+                nextNode = node;
+            }
+
+            var nodeCell = {};
+            nodeCell.cid = node.nid;
+            nodeCell.isGroup = false;
+            nodeCell.group = block.bid;
+            nodeCell.category = router.currentView.contentView.getNodeType(node.ntp);
+            nodeCell.name = node.btp;
+
+            router.currentView.contentView.FlowChartData.push(nodeCell);
+        });
+
+        // 링크 정보 보정
+        var link = {};
+        link.from = conditionNode.cid;
+        link.to = nextNode.nid;
+        link.fromSpot = router.currentView.contentView.spotType.Buttom;
+        link.toSpot = router.currentView.contentView.spotType.Top;
+
+        router.currentView.contentView.FlowLinkData.push(link);
+
     },
 
     makeLoopConditionNode: function(block) {
@@ -932,255 +846,45 @@ var FlowDiagramView =  Backbone.View.extend({
     },
 
     makeLoopWhileLink: function(block) {
-        var startJoint = block.node[0];
-        var endJoint = block.node[1];
-        var conditionNode = this.makeLoopConditionNode(block);
-        var startJointEdge = startJoint.edge[0];
-        var endJointEdge = endJoint.edge[0];
-        var callingEndJointNid = this.findCallingNodeId(endJointEdge.fnid);
-
-        if(!_.isUndefined(startJointEdge)) {
-            var startLink = {};
-            startLink.from = startJointEdge.fnid;
-            startLink.to = conditionNode.cid;
-            startLink.fromSpot = router.currentView.contentView.spotType.Buttom;
-            startLink.toSpot = router.currentView.contentView.spotType.Top;
-            router.currentView.contentView.FlowLinkData.push(startLink);
-        }
-
-        var ifLink = {};
-        ifLink.from = conditionNode.cid;
-        ifLink.to = startJoint.edge[0].toBid;
-        ifLink.fromSpot = router.currentView.contentView.spotType.Buttom;
-        ifLink.toSpot = router.currentView.contentView.spotType.Top;
-        ifLink.text = "Y";
-        router.currentView.contentView.FlowLinkData.push(ifLink);
-
-        var elseLink = {};
-        elseLink.from = conditionNode.cid;
-        elseLink.to = endJoint.nid;
-        elseLink.fromSpot = router.currentView.contentView.spotType.Right;
-        elseLink.toSpot = router.currentView.contentView.spotType.Buttom;
-        elseLink.text = "Y";
-        router.currentView.contentView.FlowLinkData.push(elseLink);
-
-        var loopLink = {};
-        loopLink.from = callingEndJointNid;
-        loopLink.to = conditionNode.cid;
-        loopLink.fromSpot = router.currentView.contentView.spotType.Buttom;
-        loopLink.toSpot = router.currentView.contentView.spotType.Left;
-        router.currentView.contentView.FlowLinkData.push(loopLink);
-
-        if(!_.isUndefined(endJointEdge)) { 
-            var endLine = {};
-            endLine.from = endJointEdge.fromBid;
-            endLine.to = endJointEdge.toBid;
-            endLine.fromSpot = router.currentView.contentView.spotType.Right;
-            endLine.toSpot = router.currentView.contentView.spotType.Buttom;
-            router.currentView.contentView.FlowLinkData.push(endLine);
-        }
+        // LOOP_while 링크정보를 생성한다.
     },
-    // #endregion
 
-    // #region LoopDo
-    // BOOKMARK: MAKE > makeLoopDoBlock
     makeLoopDoBlock: function(block) {
-        _.each(block.node, function(node) {
-            var nodeCell = {};
-            nodeCell.cid = node.nid;
-            nodeCell.isGroup = false;
-            nodeCell.group = block.bid;
-            nodeCell.category = router.currentView.contentView.getNodeType(node.ntp);
-            nodeCell.name = node.btp;
-
-            router.currentView.contentView.FlowChartData.push(nodeCell);
-        });
+        //
     },
-
-    // BOOKMARK: MAKE > makeLoopDoLink
-    makeLoopDoLink: function(block) {
-        var startJoint = block.node[0];
-        var endJoint = block.node[1];
-        var conditionNode = this.makeLoopConditionNode(block);
-        var startJointEdge = startJoint.edge[0];
-        var endJointEdge = endJoint.edge[0];
-        var callingEndJointNid = this.findCallingNodeId(endJointEdge.fnid);
-
-        if(!_.isUndefined(startJointEdge)) {
-            var startLink = {};
-            startLink.from = startJointEdge.fnid;
-            startLink.to = startJointEdge.toBid;
-            startLink.fromSpot = router.currentView.contentView.spotType.Buttom;
-            startLink.toSpot = router.currentView.contentView.spotType.Top;
-            router.currentView.contentView.FlowLinkData.push(startLink);
-        }
-
-         //statement end -> condition으로 나가는 것을 막아야..... statement에서 처리(타입에따라 그릴수 있도록)
-
-        var endLink = _.find(FC.edge, { tnid: endJointEdge.fnid});
-        var conditionLink = {};
-        conditionLink.from = endLink.fromBid;
-        conditionLink.to = conditionNode.cid;
-        conditionLink.fromSpot = router.currentView.contentView.spotType.Right;
-        conditionLink.toSpot = router.currentView.contentView.spotType.Buttom;
-        router.currentView.contentView.FlowLinkData.push(conditionLink);
-
-        var ifLink = {};
-        ifLink.from = conditionNode.cid;
-        ifLink.to = startJoint.nid;
-        ifLink.fromSpot = router.currentView.contentView.spotType.Left;
-        ifLink.toSpot = router.currentView.contentView.spotType.Top;
-        ifLink.text = "Y";
-        router.currentView.contentView.FlowLinkData.push(ifLink);
-
-        var elseLink = {};
-        elseLink.from = conditionNode.cid;
-        elseLink.to = endJoint.nid;
-        elseLink.fromSpot = router.currentView.contentView.spotType.Right;
-        elseLink.toSpot = router.currentView.contentView.spotType.Buttom;
-        elseLink.text = "N";
-        router.currentView.contentView.FlowLinkData.push(elseLink);
-
-        if(!_.isUndefined(endJointEdge)) {
-            var endLine = {};
-            endLine.from = endJointEdge.fromBid;
-            endLine.to = endJointEdge.toBid;
-            endLine.fromSpot = router.currentView.contentView.spotType.Right;
-            endLine.toSpot = router.currentView.contentView.spotType.Buttom;
-            router.currentView.contentView.FlowLinkData.push(endLine);
-        }
-        else {
-            console.log("Loop While EndJoint is Undefined");
-        }
-    },
-    // #endregion
-
-    // #region TryCatchFinally
-    makeTryCatchFinallyBlock: function(block) {
-        // TODO: start, end 제외
-    },
-
-    makeTryCatchFinallyLink: function(block) {
-    },
-
-    makeTryBlock: function(block) {
-        _.each(block.node, function(node) {
-            // TODO: start, end 제외
-            var nodeCell = {};
-            nodeCell.cid = node.nid;
-            nodeCell.isGroup = false;
-            nodeCell.group = block.bid;
-            nodeCell.category = router.currentView.contentView.getNodeType(node.ntp);
-            nodeCell.name = node.ntp;
-
-            router.currentView.contentView.FlowChartData.push(nodeCell);
-        });
-    },
-
-    makeTryLink: function(block) {
-
-    },
-
-    makeCatchListBlock: function(block) {
-        _.each(block.node, function(node) {
-            // TODO: start, end 제외
-            var nodeCell = {};
-            nodeCell.cid = node.nid;
-            nodeCell.isGroup = false;
-            nodeCell.group = block.bid;
-            nodeCell.category = router.currentView.contentView.getNodeType(node.ntp);
-            nodeCell.name = node.ntp;
-
-            router.currentView.contentView.FlowChartData.push(nodeCell);
-        });
-    },
-
-    makeCatchListLink: function(block) {
-        _.each(block.node, function(node) {
-            var type = router.currentView.contentView.getNodeType(node.ntp);
-
-            if(type === router.currentView.contentView.nodeType.StartJoint) {
-                console.log("Start Joint");
-                _.each(node.edge, function(edge) {
-                    var link = {};
-                    link.from = edge.fnid;
-                    link.to = edge.toBid;
-                    link.fromSpot = router.currentView.contentView.spotType.Buttom;
-                    link.toSpot = router.currentView.contentView.spotType.Top;
-                    router.currentView.contentView.FlowLinkData.push(link);
-                });
-            } else if(type === router.currentView.contentView.nodeType.EndJoint) {
-                // console.log(" End Joint");
-                // _.each(node.edge, function(edge) {
-                //     var link = {};
-                //     link.from = edge.fromBid;
-                //     link.to = edge.toBid;    // find final,re turn Node
-                //     link.fromSpot = router.currentView.contentView.spotType.Buttom;
-                //     link.toSpot = router.currentView.contentView.spotType.Top;
-                //     router.currentView.contentView.FlowLinkData.push(link);
-                // });
-            }
-        });
-    },
-
-    makeCatchBlock: function(block) {
-        var text = "java.lang.ClassNotFoundException e";
-        router.currentView.contentView.changeBlockName(block, "Catch(" + text +  ")");
-    },
-
-    changeBlockName: function(block, text) {
-        var nodeCell = router.currentView.contentView.findNodeCell(block.bid)
-        if(_.isUndefined(nodeCell)) 
-            return;
-
-        nodeCell.name = text;
-    },
-
-    makeCatchLink: function(block) {
-
-    },
-    // #endregion
 
     // BOOKMARK TYPE > getBlockType
     getBlockType: function(blockTypeName) {
-
+        // TODO: CM > InitBlockTypeDic()  동일하게 설정
         switch(blockTypeName) {
-            case router.currentView.contentView.blockType.Statement:
+            case "StatementBlock":
                 return router.currentView.contentView.blockType.Statement;
-            case  router.currentView.contentView.blockType.If:
+            case "IF":
                 return router.currentView.contentView.blockType.If;
-            
+            case "TryBlock":
+                return router.currentView.contentView.blockType.Try;
+            case "LOOP_while":
+            case "LOOP_for":
+                return router.currentView.contentView.blockType.LoopWhile;
+            case "LOOP_do":
+                return router.currentView.contentView.blockType.LoopDo; 
+
+            case "SWITCH":
+                return router.currentView.contentView.blockType.Switch;
+
+            // Switch
+            // Case
+
             // Loop
             // LoopDo
             // LoopR    // Y N label 변경
             // DOLoopR  // Y N label 변경
-            case router.currentView.contentView.blockType.LoopWhile:
-                return router.currentView.contentView.blockType.LoopWhile;
-            case router.currentView.contentView.blockType.LoopFor:
-                return router.currentView.contentView.blockType.LoopFor;
-            case router.currentView.contentView.blockType.LoopDo:
-                return router.currentView.contentView.blockType.LoopDo; 
-        
+            
             // Try
             // TryCatch
             // Catch
             // Final
             // CatchList
-            case router.currentView.contentView.blockType.TryCatchFinally:
-                return router.currentView.contentView.blockType.TryCatchFinally;
-            case router.currentView.contentView.blockType.Try:
-                return router.currentView.contentView.blockType.Try;
-            case router.currentView.contentView.blockType.CatchList:
-                return router.currentView.contentView.blockType.CatchList;
-            case router.currentView.contentView.blockType.CatchBlock:
-                return router.currentView.contentView.blockType.CatchBlock;
-            
-            // Switch
-            // Case
-            case router.currentView.contentView.blockType.Switch:
-                return router.currentView.contentView.blockType.Switch;
-            case router.currentView.contentView.blockType.Case:
-            return router.currentView.contentView.blockType.Case;
 
             default: 
                 return router.currentView.contentView.blockType.Statement;
@@ -1201,36 +905,18 @@ var FlowDiagramView =  Backbone.View.extend({
                 return router.currentView.contentView.nodeType.EndJoint;
                 
             case "STBLOCK_START":
-                return router.currentView.contentView.nodeType.StartJoint;
+                return router.currentView.contentView.nodeType.Statement;
             case "STBLOCK_END":
-                return router.currentView.contentView.nodeType.EndJoint;
+                return router.currentView.contentView.nodeType.Statement;
 
             case "LOOP_while_START":
                 return router.currentView.contentView.nodeType.StartJoint;
             case "LOOP_while_END":
                 return router.currentView.contentView.nodeType.EndJoint;
             
-            case "LOOP_do_START":
-                return router.currentView.contentView.nodeType.StartJoint;
-            case "LOOP_do_END":
-                return router.currentView.contentView.nodeType.EndJoint;
-
-            case "LOOP_for_START":
-                return router.currentView.contentView.nodeType.StartJoint;
-            case "LOOP_for_END":
-                return router.currentView.contentView.nodeType.EndJoint;
-
             case "SWITCH_START":
                 return router.currentView.contentView.nodeType.Switch;
             case "SWITCH_END":
-                return router.currentView.contentView.nodeType.EndJoint;
-
-            case "CATCHLIST_START":
-                return router.currentView.contentView.nodeType.StartJoint;
-            case "CATCHLIST_END":
-                return router.currentView.contentView.nodeType.EndJoint;
-
-            case "CATCH": 
                 return router.currentView.contentView.nodeType.EndJoint;
 
             case "RETURN":
@@ -1301,10 +987,10 @@ var FlowDiagramView =  Backbone.View.extend({
         // 6: if
         // 2: try
         // 5: loop
-        var object_id = "2";
+        var object_id = "6";
         this.generateData();
         this.makeBlock(object_id);
-        //this.makeLink(object_id);
+        this.makeLink(object_id);
 
         this.initModel();
     

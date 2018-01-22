@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "file:///E:/GitRepo/JavaScript/06.backbone_Flow/index.html",
+            "url": "file:///C:/Users/Administrator/git/JavaScript/02.Underscore/index.html",
             "webRoot": "${workspaceRoot}/lib/"
         }
     ]

@@ -8,7 +8,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome",
-            "url": "file:///C:/Users/Administrator/git/JavaScript/05%20.GoJS/index.html",
+            "url": "file:///E:/GitRepo/JavaScript/05.GoJS/index.html",
             "webRoot": "${workspaceRoot}"
         }
     ]
