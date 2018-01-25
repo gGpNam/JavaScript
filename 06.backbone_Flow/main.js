@@ -49,21 +49,23 @@ var FlowDiagramView =  Backbone.View.extend({
     },
 
     properties: {
-        highlightMemoNodeColor : "MediumBlue",
-        aggregationArrowHead: "StretchedDiamond",
-        associationArrowHead: "",
-        compositionArrowHead: "StretchedDiamond",
-        dependencyArrowHead: "OpenTriangle",
-        directedAssociationArrowHead: "OpenTriangle",
-        generalizationArrowHead: "Triangle",
-        realizationArrowHead: "Triangle",
-        defaultArrowHeadColor: "white",
-        linkColor: "DarkRed",
-        nodeColor: "DarkRed",
-        nodeWidth: 140,
-        nodeMinWidth: 80,
-        nodesWidthSpacing : 10,
-        nodesHeightSpacing : 30,
+        // highlightMemoNodeColor : "MediumBlue",
+        // aggregationArrowHead: "StretchedDiamond",
+        // associationArrowHead: "",
+        // compositionArrowHead: "StretchedDiamond",
+        // dependencyArrowHead: "OpenTriangle",
+        // directedAssociationArrowHead: "OpenTriangle",
+        // generalizationArrowHead: "Triangle",
+        // realizationArrowHead: "Triangle",
+        // defaultArrowHeadColor: "white",
+        // linkColor: "DarkRed",
+        // nodeColor: "DarkRed",
+        // nodeWidth: 140,
+        // nodeMinWidth: 80,
+        // nodesWidthSpacing : 10,
+        // nodesHeightSpacing : 30,
+        defaultJointColor: "#FFFFFF",
+        defaultFont: "9pt Helvetica, Arial, sans-serif",
         diagramPaddingTop: 70
     },
 
@@ -94,9 +96,9 @@ var FlowDiagramView =  Backbone.View.extend({
             setsPortSpots: false,
             isRealtime: false,
             //arrangement:  go.TreeLayout.ArrangementHorizontal
-            //layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
+            layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
             //layeringOption: go.LayeredDigraphLayout.LayerLongestPathSource,
-            layeringOption: go.LayeredDigraphLayout.LayerOptimalLinkLength,
+            //layeringOption: go.LayeredDigraphLayout.LayerOptimalLinkLength,
             //initializeOption = go.LayeredDigraphLayout.InitDepthFirstOut,
             //initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn,
             //initializeOption = go.LayeredDigraphLayout.InitNaive,
@@ -106,6 +108,13 @@ var FlowDiagramView =  Backbone.View.extend({
             //packOption : 10
         });
     },
+
+    // layoutStyle: function() {
+    //     return this.$go(go.ParallelLayout, {
+    //         layerSpacing: 20,
+    //         nodeSpacing: 10,
+    //     });
+    // },
 
     makePort: function(name, spot, output, input) {
         // the port is basically just a small circle that has a white stroke when it is made visible
@@ -186,22 +195,6 @@ var FlowDiagramView =  Backbone.View.extend({
 
     // BOOKMARK: TEMPLATE > initNodeTemplate
     initNodeTemplate: function() {
-        var simpletemplate =
-            this.$go(go.Node, "Auto",
-            this.$go(go.Shape, "Ellipse",
-                new go.Binding("fill", "color")),
-                this.$go(go.TextBlock,
-                new go.Binding("text", "nid")),
-              {
-                toolTip:
-                this.$go(go.Adornment, "Auto",
-                this.$go(go.Shape, { fill: "#FFFFCC" }),
-                this.$go(go.TextBlock, { margin: 4 },
-                      new go.Binding("text", "nid"))
-                  )
-              }
-            );
-
         var startNodeTemplate = this.$go(go.Node, "Spot",
                                          this.nodeStype(),
                                          this.$go(go.Panel, "Auto",
@@ -213,7 +206,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                             }),
                                                   this.$go(go.TextBlock, "Start",
                                                            {
-                                                               font: "bold 9pt Helvetica, Arial, sans-serif",
+                                                               font: this.properties.defaultFont,
                                                                stroke: "whitesmoke"
                                                            })),
                                          );
@@ -229,7 +222,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                          }),
                                                this.$go(go.TextBlock, "End",
                                                         {
-                                                            font: "bold 9pt Helvetica, Arial, sans-serif",
+                                                            font: this.properties.defaultFont,
                                                             stroke: "whitesmoke"
                                                         })));
 
@@ -242,7 +235,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                     }),
                                           this.$go(go.TextBlock,
                                                    {
-                                                       font: "bold 9pt Helvetica, Arial, sans-serif",
+                                                       font: this.properties.defaultFont,
                                                        margin: 5,
                                                        stroke: "black"
                                                    },
@@ -259,7 +252,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                             }),
                                                   this.$go(go.TextBlock, "IF",
                                                            {
-                                                               font: "bold 9pt Helvetica, Arial, sans-serif",
+                                                               font: this.properties.defaultFont,
                                                                stroke: "whitesmoke"
                                                            })));
 
@@ -274,32 +267,30 @@ var FlowDiagramView =  Backbone.View.extend({
                                                             }),
                                                   this.$go(go.TextBlock, "",
                                                            {
-                                                               font: "bold 9pt Helvetica, Arial, sans-serif",
+                                                               font: this.properties.defaultFont,
                                                                stroke: "whitesmoke"
                                                            },
                                                            new go.Binding("text", "name"))));
 
         var startJointNodeTemplate = this.$go(go.Node, "Spot",
-                                       this.nodeStype(),
-                                       this.$go(go.Panel, "Auto",
-                                                this.$go(go.Shape, "Ellipse",
-                                                         {
-                                                             minSize: new go.Size(10, 10),
-                                                             maxSize: new go.Size(10, 10),
-                                                             fill: "whitesmoke",
-                                                             stroke: null 
-                                                         })));
+                                              this.nodeStype(),
+                                              this.$go(go.Shape, "Ellipse",
+                                                       {
+                                                           minSize: new go.Size(10, 10),
+                                                           maxSize: new go.Size(10, 10),
+                                                           fill: this.properties.defaultJointColor,
+                                                           stroke: null 
+                                                        }));
 
         var endJointNodeTemplate = this.$go(go.Node, "Spot",
-                                       this.nodeStype(),
-                                       this.$go(go.Panel, "Auto",
-                                                this.$go(go.Shape, "Ellipse",
-                                                         {
-                                                             minSize: new go.Size(10, 10),
-                                                             maxSize: new go.Size(10, 10),
-                                                             fill: "Red",
-                                                             stroke: null 
-                                                         })));
+                                            this.nodeStype(),
+                                            this.$go(go.Shape, "Ellipse",
+                                                     {
+                                                         minSize: new go.Size(10, 10),
+                                                         maxSize: new go.Size(10, 10),
+                                                         fill: "red",
+                                                         stroke: null
+                                                     }));
 
         // var startJointNodeTemplate = this.$go(go.Node, "Spot",
         //                                       this.nodeStype(),
@@ -382,6 +373,7 @@ var FlowDiagramView =  Backbone.View.extend({
 
         var defaultGroupTemplate = this.$go(go.Group, "Auto",
                                             {
+                                                
                                                 layout: this.layoutStyle(),
                                                 isSubGraphExpanded: true,
                                                 subGraphExpandedChanged: this.subGraphExpandedChanged
@@ -1143,6 +1135,14 @@ var FlowDiagramView =  Backbone.View.extend({
         loopLink.fromSpot = router.currentView.contentView.spotType.Left;
         loopLink.toSpot = router.currentView.contentView.spotType.Left; 
         router.currentView.contentView.FlowLinkData.push(loopLink);
+
+        var endLink = {};
+        endLink.from = resultBlock.bid;
+        endLink.to = endLoop.nid;
+        endLink.fromSpot = router.currentView.contentView.spotType.Buttom;
+        endLink.toSpot = router.currentView.contentView.spotType.Top; 
+        endLink.visible = false;
+        router.currentView.contentView.FlowLinkData.push(endLink);
     },
 
     // BOOKMARK: MAKE > makeLoopDoBlock
@@ -1178,14 +1178,13 @@ var FlowDiagramView =  Backbone.View.extend({
         startLink.toSpot = router.currentView.contentView.spotType.Top;
         router.currentView.contentView.FlowLinkData.push(startLink);
 
-        var ifLink = {};
-        ifLink.from = loopCondition.cid;
-        ifLink.to = startLoop.nid;
-        ifLink.fromSpot = router.currentView.contentView.spotType.Left;
-        ifLink.toSpot = router.currentView.contentView.spotType.Left;
-        ifLink.text = "Y";
-        ifLink.visible = true;
-        router.currentView.contentView.FlowLinkData.push(ifLink);
+        var loopLink = {};
+        loopLink.from = resultBlock.bid;
+        loopLink.to = loopCondition.cid;
+        loopLink.fromSpot = router.currentView.contentView.spotType.Buttom;
+        loopLink.toSpot = router.currentView.contentView.spotType.Top;
+        router.currentView.contentView.FlowLinkData.push(loopLink);
+
 
         var elseLink = {};
         elseLink.from = loopCondition.cid;
@@ -1196,14 +1195,15 @@ var FlowDiagramView =  Backbone.View.extend({
         elseLink.visible = true;
         router.currentView.contentView.FlowLinkData.push(elseLink);
 
-        //this.removelink(endLoop.nid);
-
-        var loopLink = {};
-        loopLink.from = resultBlock.bid;
-        loopLink.to = loopCondition.cid;
-        loopLink.fromSpot = router.currentView.contentView.spotType.Buttom;
-        loopLink.toSpot = router.currentView.contentView.spotType.Top;
-        router.currentView.contentView.FlowLinkData.push(loopLink);
+        
+        var ifLink = {};
+        ifLink.from = loopCondition.cid;
+        ifLink.to = startLoop.nid;
+        ifLink.fromSpot = router.currentView.contentView.spotType.Right;
+        ifLink.toSpot = router.currentView.contentView.spotType.Right;
+        ifLink.text = "Y";
+        ifLink.visible = true;
+        router.currentView.contentView.FlowLinkData.push(ifLink);
     },
 
     removelink: function(nid) {
@@ -1396,9 +1396,13 @@ var FlowDiagramView =  Backbone.View.extend({
         // 6: if
         // 2: try
         // 5: loop
-        var object_id = "5";
+        var object_id = "6";
+
+        
         this.generateData();
         this.makeBlock(object_id);
+
+        
         //this.makeLink(object_id);
 
         this.initModel();
