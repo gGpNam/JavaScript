@@ -536,9 +536,6 @@ var FlowDiagramView =  Backbone.View.extend({
         this.initNodeData(response.node);
         this.initTextData(response.text);
         this.initLinkData(response.edge);
-
-        //this.printNode();
-        console.log("");
     },
 
     // #region data generate
@@ -588,101 +585,6 @@ var FlowDiagramView =  Backbone.View.extend({
         return tree;
     },
 
-    // findBlock: function(oid, bid) {
-    //     var block = null;
-    //     var object = _.find(router.currentView.contentView.FlowChartTreeData, {oid: oid});
-
-    //     if(object.block.bid === bid)
-    //         return object.block;
-
-    //     // _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-    //     //     _.each(object.block, function(_block) {
-    //     //         if(_block.bid === bid)
-    //     //             block = _block;
-    //     //     })
-    //     // });
-    //     // return block;
-    // },
-
-    // getChild: function(bid) {
-
-    //     _.each(childBlock, function(block) {
-    //         if(bloc.bid === bid) {
-    //             return block;
-    //         } else {
-    //             console.log("");
-    //         }
-    //     });
-
-    //     // if(block.block)
-    // },
-
-    // BOOKMARK INIT > getChildBlock
-    // getChildBlock: function(paretnBlock) {
-
-    //     console.log("");
-    //     // var childBlock = _.filter(FC.block, { oid : paretnBlock.oid, pbid: paretnBlock.bid });
-
-    //     // if(childBlock.length === 0)
-    //     //     return;
-
-    //     // paretnBlock.block = childBlock;
-
-    //     // _.each(childBlock, function(_childBlock) {
-    //     //     _childBlock.node = router.currentView.contentView.getNode(_childBlock);
-    //     //     _childBlock.edge = router.currentView.contentView.getEdge(_childBlock);
-    //     //     router.currentView.contentView.getChildBlock(_childBlock); 
-    //     // });
-    // },
-
-    // getNode: function(block) {
-        
-    //     var nodes = _.filter(FC.node, { bid: block.bid });
-
-    //     _.each(nodes, function(node) {
-    //         var text = _.filter(FC.text, { nid: node.nid });
-
-    //         if(text.length === 0) 
-    //             return;
-
-    //         node.text = text[0].txt;
-    //     });
-
-    //     return nodes; 
-    // },
-
-    // getEdge: function(block) {
-    //     var edges = [];
-        
-    //     _.each(block.node, function(node) {
-    //         var edge = router.currentView.contentView.getLinks(node);
-
-    //         if(_.isUndefined(edge))
-    //             return;
-
-    //         var link = [];
-    //         _.each(edge, function(link) {
-    //             edges.push(link); 
-    //         })
-    //     });
-
-    //     return edges;
-    // },
-
-    // getLinks: function(node) {
-    //     var links = _.filter(FC.edge, { fnid: node.nid });
-    //     var edges = [];
-    //     _.each(links, function(_link) {
-    //         var link = {};
-    //         link.fnid = _link.fnid;
-    //         link.tnid = _link.tnid;
-    //         link.etp = _link.etp;
-    //         edges.push(link);
-    //     });
-        
-    //     return edges;
-    // },
-
     initNodeData: function(nodeList) {
          _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
             router.currentView.contentView.fillNode(object.block, nodeList);
@@ -705,24 +607,6 @@ var FlowDiagramView =  Backbone.View.extend({
             router.currentView.contentView.fillNode(_block, nodeList);
         });
     },
-
-    // getAllBLock: function(object) {
-    //     var blocks = [];
-    //     blocks.push(object.block);
-
-    //     var  children = object.block.child;
-
-    //     if(childrent.length != 0 ) {
-
-    //     }
-    // },
-
-    // iterate: function (block, result) {
-    //     var children = block.child;
-    //     _.each(children, function( child ){
-    //         router.currentView.contentView.iterate(child) 
-    //     });
-    // },
 
     // BOOKMARK INIT > initTextData
     initTextData: function(textList) {
@@ -775,19 +659,9 @@ var FlowDiagramView =  Backbone.View.extend({
         });
     },
 
-    // printNode: function() {
-    //     console.log("############# <START> #############");
-    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-    //         console.log(object.oid);
-    //         _.each(object.block, function(block) {
-    //             console.log(">> " + block.bid);
-    //             _.each(block.node, function(node) {
-    //                 console.log(">>>> " + node.nid);
-    //             });
-    //         });
-    //     });
-    //     console.log("############# <END> #############");
-    // },
+    // #endregion
+
+    // #region function
 
     getBlockType: function(blockTypeName) {
         if(_.contains(router.currentView.contentView.blockType, blockTypeName)) {
@@ -866,78 +740,7 @@ var FlowDiagramView =  Backbone.View.extend({
     findObject: function(objectId) {
         return _.find(router.currentView.contentView.FlowChartTreeData, { oid: objectId } );
     },
-
-    // findBlock: function(bid) {
-    //     var block = null;
-    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-    //         _.each(object.block, function(_block) {
-    //             if(_block.bid === bid)
-    //                 block = _block;
-    //         })
-    //     });
-    //     return block;
-    // },
-
-    // findNode: function(nid) {
-    //     var node = null;
-    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-    //         _.each(object.block, function(block) {
-    //             _.each(block.node, function(_node) {
-    //                 if(_node.nid === nid)
-    //                     node = _node; 
-    //             });
-    //         })
-    //     });
-    //     return node;
-    // },
-
-    // // 노드가 호출 당하는 EDGE ID
-    // findCallingNodeId: function(nid) {
-    //     var edge = _.filter(FC.edge, { tnid: nid });
-    //     return edge[0].fnid;
-    // },
-
-    // // 노드가 호출하는 EDGE ID
-    // findCalleeNodeId: function(nid) {
-    //     var edge = _.filter(FC.edge, { tnid: nid });
-    //     return edge[0].fnid;
-    // },
-
-    // findBlockOfNode: function(nid) {
-    //     var block = null;
-    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-    //         _.each(object.block, function(_block) {
-    //             _.each(_block.node, function(_node) {
-    //                 if(_node.nid === nid) {
-    //                     block = _block;
-    //                 }
-    //             });
-    //         })
-    //     });
-    //     return block;
-    // },
-
-    // // 블럭에 포함된 노드의 링크 정보를 보낸다. DUPLICATED
-    // findLink: function(blockId) {
-    //     var linkList = [];
-
-    //     _.each(FC.edge, function(edge) {
-    //         var link = {};
-    //         var nodeCell = router.currentView.contentView.findNodeCell(edge.fnid);
-    //         if(_.isUndefined(nodeCell)) 
-    //             return;
-
-    //         //if(nodeCell.category === router.currentView.contentView.nodeType.StartJoint)
-    //         //    return;
-
-    //         link.from = edge.fnid;
-    //         link.to = edge.tnid;
-    //         link.fromSpot = router.currentView.contentView.spotType.Buttom;
-    //         link.toSpot = router.currentView.contentView.spotType.Top;
-
-    //         linkList.push(link);
-    //     });
-    // },
+    
     // #endregion
 
     // BOOKMARK: MAKE > makeBlock
@@ -1075,17 +878,6 @@ var FlowDiagramView =  Backbone.View.extend({
         link.toSpot = router.currentView.contentView.spotType.Top;
         router.currentView.contentView.FlowLinkData.push(link);
     },
-
-    // isNodeContainInBlock: function(block, nid) {
-    //     var isContain = false;
-    //     _.each(block.node, function(node) {
-    //         if(node.nid === nid ) {
-    //             isContain = true;
-    //         }
-    //     })
-
-    //     return isContain;
-    // },
 
     // #region makeStateMent 
     // BOOKMARK: MAKE > makeStateMentBlock
@@ -1475,17 +1267,17 @@ var FlowDiagramView =  Backbone.View.extend({
 
 
     initNode: function() {
-        this.generateData(FC);
-
+        router.currentView.contentView.generateData(FC);
+        router.currentView.contentView.initObjectList(FC.obj);
+        
         // 6: if
         // 2: try
         // 5: loop
-        var object_id = "6";
-
-        this.makeBlock(object_id);
+        //var object_id = "6";
+        //this.makeBlock(object_id);
         //this.makeLink(object_id);
 
-        this.initModel();
+        router.currentView.contentView.initModel();
     
         // router.currentView.contentView.nodeInfos = response;
         // router.currentView.contentView.visitLinks(null, router.currentView.contentView.oid);
@@ -1515,6 +1307,32 @@ var FlowDiagramView =  Backbone.View.extend({
         };
 
         this.diagram.model = this.$go(go.GraphLinksModel, graphLinkModelOptions);
+    },
+
+    initObjectList: function(objList) {
+        $(".diagram-object").dxDataGrid({
+            dataSource: objList,
+            sorting: { mode: "none" },
+            showColumnLines: false,
+            showRowLines: false,
+            selection: {
+                mode: "single"
+            },
+            columns: [{
+                caption: "object",
+                dataField: 'onm',
+                width: "100%"
+            }],
+            onCellClick: function(clickedCell) {
+                if(clickedCell.row.rowType == "data" && !_.isUndefined(clickedCell.rowIndex)) {
+                	console.log(clickedCell.data.oid);
+                	router.currentView.contentView.makeBlock(clickedCell.data.oid);
+                }
+            },
+            onRowClick: function(e) {
+            	console.log("");
+            }
+        });
     },
 
     initTemplate: function() {

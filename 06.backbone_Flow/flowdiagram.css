@@ -1,0 +1,11 @@
+.diagram-object-box {
+    border: solid 1px whitesmoke;    
+    width: 30%;
+    height: 100%;
+    float: left;
+}
+
+.diagram-object {
+    width: 100%;
+    height: 100%
+}
