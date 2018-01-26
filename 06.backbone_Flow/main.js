@@ -530,17 +530,20 @@ var FlowDiagramView =  Backbone.View.extend({
         router.currentView.contentView.FlowChartData.push(endCell);
     },
 
-    generateData: function() {  
-        this.initObjectData();  
-        this.initBlockData();
-        //this.initNodeData();
-        //this.initLinkData();
+    generateData : function(response) {
+    	this.initObjectData(response.obj);
+        this.initBlockData(response.block);
+        this.initNodeData(response.node);
+        this.initTextData(response.text);
+        this.initLinkData(response.edge);
+
         //this.printNode();
+        console.log("");
     },
 
     // #region data generate
-    initObjectData: function() {
-        _.each(FC.obj, function(object) {
+    initObjectData: function(objectList) {
+        _.each(objectList, function(object) {
 
             if(object.poid === "-1" )
                 return;
@@ -551,153 +554,240 @@ var FlowDiagramView =  Backbone.View.extend({
             _object.onm = object.onm;
             _object.ogid = object.ogid;
             _object.otp = object.otp;
-            _object.rootBlock = {};
+            _object.block = {};
             router.currentView.contentView.FlowChartTreeData.push(_object);
         });
     },
 
-    initBlockData: function() {
-        _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-            var rootBlockData =  _.find(FC.block, { oid: object.oid, pbid: "-1" });
-            if(_.isUndefined(rootBlockData)) 
-                return;    
-
-            var rootBlock = {};
-            rootBlock.oid = rootBlockData.oid
-            rootBlock.bid = rootBlockData.bid;
-            rootBlock.pbid = rootBlockData.pbid;
-            rootBlock.btp = rootBlockData.btp;
-            rootBlock.rootBlock = [];
-            rootBlock.node = [];
-            router.currentView.contentView.getChildBlock(rootBlock);
-            object.rootBlock = rootBlock;
+    initBlockData: function(blockList) {
+        var blockTree = this.getTree(blockList);
+        _.each(router.currentView.contentView.FlowChartTreeData, function(object){
+            object.block = _.find(blockTree, { oid: object.oid });
         });
     },
+
+    getTree: function( array, parent, tree ) {
+        tree = typeof tree !== 'undefined' ? tree : [];
+        parent = typeof parent !== 'undefined' ? parent : { bid: "-1" };
+    
+        var children = _.filter( array, function(child){ return child.pbid == parent.bid; });
+    
+        if( !_.isEmpty( children )  ){
+            if( parent.bid === "-1" ){
+               tree = children;
+            } else {
+               parent['children'] = children;
+            }
+            _.each( children, function( child ){
+                child.node = [];
+                child.edge = [];
+                router.currentView.contentView.getTree( array, child ) 
+            });
+        }
+
+        return tree;
+    },
+
+    // findBlock: function(oid, bid) {
+    //     var block = null;
+    //     var object = _.find(router.currentView.contentView.FlowChartTreeData, {oid: oid});
+
+    //     if(object.block.bid === bid)
+    //         return object.block;
+
+    //     // _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
+    //     //     _.each(object.block, function(_block) {
+    //     //         if(_block.bid === bid)
+    //     //             block = _block;
+    //     //     })
+    //     // });
+    //     // return block;
+    // },
+
+    // getChild: function(bid) {
+
+    //     _.each(childBlock, function(block) {
+    //         if(bloc.bid === bid) {
+    //             return block;
+    //         } else {
+    //             console.log("");
+    //         }
+    //     });
+
+    //     // if(block.block)
+    // },
 
     // BOOKMARK INIT > getChildBlock
-    getChildBlock: function(paretnBlock) {
+    // getChildBlock: function(paretnBlock) {
 
-        var childBlock = _.filter(FC.block, { oid : paretnBlock.oid, pbid: paretnBlock.bid });
+    //     console.log("");
+    //     // var childBlock = _.filter(FC.block, { oid : paretnBlock.oid, pbid: paretnBlock.bid });
 
-        if(childBlock.length === 0)
-            return;
+    //     // if(childBlock.length === 0)
+    //     //     return;
 
-        paretnBlock.block = childBlock;
+    //     // paretnBlock.block = childBlock;
 
-        _.each(childBlock, function(_childBlock) {
-            _childBlock.node = router.currentView.contentView.getNode(_childBlock);
-            _childBlock.edge = router.currentView.contentView.getEdge(_childBlock);
-            router.currentView.contentView.getChildBlock(_childBlock); 
+    //     // _.each(childBlock, function(_childBlock) {
+    //     //     _childBlock.node = router.currentView.contentView.getNode(_childBlock);
+    //     //     _childBlock.edge = router.currentView.contentView.getEdge(_childBlock);
+    //     //     router.currentView.contentView.getChildBlock(_childBlock); 
+    //     // });
+    // },
+
+    // getNode: function(block) {
+        
+    //     var nodes = _.filter(FC.node, { bid: block.bid });
+
+    //     _.each(nodes, function(node) {
+    //         var text = _.filter(FC.text, { nid: node.nid });
+
+    //         if(text.length === 0) 
+    //             return;
+
+    //         node.text = text[0].txt;
+    //     });
+
+    //     return nodes; 
+    // },
+
+    // getEdge: function(block) {
+    //     var edges = [];
+        
+    //     _.each(block.node, function(node) {
+    //         var edge = router.currentView.contentView.getLinks(node);
+
+    //         if(_.isUndefined(edge))
+    //             return;
+
+    //         var link = [];
+    //         _.each(edge, function(link) {
+    //             edges.push(link); 
+    //         })
+    //     });
+
+    //     return edges;
+    // },
+
+    // getLinks: function(node) {
+    //     var links = _.filter(FC.edge, { fnid: node.nid });
+    //     var edges = [];
+    //     _.each(links, function(_link) {
+    //         var link = {};
+    //         link.fnid = _link.fnid;
+    //         link.tnid = _link.tnid;
+    //         link.etp = _link.etp;
+    //         edges.push(link);
+    //     });
+        
+    //     return edges;
+    // },
+
+    initNodeData: function(nodeList) {
+         _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
+            router.currentView.contentView.fillNode(object.block, nodeList);
         });
     },
 
-    getNode: function(block) {
+    fillNode: function(block, nodeList) {
         
-        var nodes = _.filter(FC.node, { bid: block.bid });
+        if(_.isUndefined(block))
+            return;
+            
+        var nodes = _.filter( nodeList, function(node){ return node.bid == block.bid; });
 
         _.each(nodes, function(node) {
-            var text = _.filter(FC.text, { nid: node.nid });
 
-            if(text.length === 0) 
-                return;
-
-            node.text = text[0].txt;
+            block.node.push(node);
         });
 
-        return nodes; 
+        _.each(block.children, function(_block){
+            router.currentView.contentView.fillNode(_block, nodeList);
+        });
     },
 
-    getEdge: function(block) {
-        var edges = [];
-        
+    // getAllBLock: function(object) {
+    //     var blocks = [];
+    //     blocks.push(object.block);
+
+    //     var  children = object.block.child;
+
+    //     if(childrent.length != 0 ) {
+
+    //     }
+    // },
+
+    // iterate: function (block, result) {
+    //     var children = block.child;
+    //     _.each(children, function( child ){
+    //         router.currentView.contentView.iterate(child) 
+    //     });
+    // },
+
+    // BOOKMARK INIT > initTextData
+    initTextData: function(textList) {
+        _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
+            router.currentView.contentView.fillText(object.block, textList);
+        });
+    },
+
+    fillText: function(block, textList) {
+        if(_.isUndefined(block))
+            return;
+
         _.each(block.node, function(node) {
-            var edge = router.currentView.contentView.getLinks(node);
-
-            if(_.isUndefined(edge))
+            var text = _.filter(textList, function(text){ return text.nid === node.nid; });
+            if(text.length === 0 ) 
                 return;
-
-            var link = [];
-            _.each(edge, function(link) {
-                edges.push(link); 
-            })
+            else 
+                node.text = text[0];
         });
 
-        return edges;
-    },
-
-    getLinks: function(node) {
-        var links = _.filter(FC.edge, { fnid: node.nid });
-        var edges = [];
-        _.each(links, function(_link) {
-            var link = {};
-            link.fnid = _link.fnid;
-            link.tnid = _link.tnid;
-            link.etp = _link.etp;
-            edges.push(link);
-        });
-        
-        return edges;
-    },
-
-    initNodeData: function() {
-        _.each(FC.node, function(node) {
-            var block =  router.currentView.contentView.findBlock(node.bid);
-            if(_.isUndefined(block)) 
-                return;
-
-            var _node = {};
-            _node.bid = node.bid;
-            _node.nid = node.nid;
-            _node.ntp = node.ntp;
-            _node.sid = node.sid;
-            _node.sln = node.sln;
-            _node.eln = node.eln;
-            _node.edge = [];
-
-            block.node.push(_node);
+        _.each(block.children, function(_block){
+            router.currentView.contentView.fillText(_block, textList);
         });
     },
 
     // BOOKMARK INIT > initLinkData
-    initLinkData: function() {
-        _.each(router.currentView.contentView.FlowChartTreeData, function(object){
-            _.each(object.block, function(block) {
-                _.each(block.node, function(node) {
-                    var edgeDataList  = _.filter(FC.edge, { fnid: node.nid });
-                    if(_.isUndefined(edgeDataList))
-                        return;
-
-                    _.each(edgeDataList, function(edgeData) {
-                        var fromBlock = router.currentView.contentView.findBlockOfNode(edgeData.fnid);
-                        var toBlock = router.currentView.contentView.findBlockOfNode(edgeData.tnid);
-    
-                        if(_.isUndefined(fromBlock))
-                             return;
-    
-                        edgeData.category = router.currentView.contentView.getNodeType(node.ntp);
-                        edgeData.fromBid = fromBlock.bid;
-                        edgeData.toBid = toBlock.bid;
-    
-                        node.edge.push(edgeData);
-                    })
-                });
-            });
-        });
-    },
-
-    printNode: function() {
-        console.log("############# <START> #############");
+    initLinkData: function(edgeList) {
         _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-            console.log(object.oid);
-            _.each(object.block, function(block) {
-                console.log(">> " + block.bid);
-                _.each(block.node, function(node) {
-                    console.log(">>>> " + node.nid);
-                });
-            });
+            router.currentView.contentView.fillEdge(object.block, edgeList);
         });
-        console.log("############# <END> #############");
     },
+
+    fillEdge: function(block, edgeList) {
+        if(_.isUndefined(block))
+            return;
+
+        _.each(block.node, function(node) {
+            var edges = _.filter(edgeList, function(edge){ return edge.fnid === node.nid; });
+            if(edges.length === 0 ) 
+                return;
+
+            _.each(edges, function(_edge) {
+                block.edge.push(_edge);
+            })
+            
+        });
+
+        _.each(block.children, function(_block){
+            router.currentView.contentView.fillEdge(_block, edgeList);
+        });
+    },
+
+    // printNode: function() {
+    //     console.log("############# <START> #############");
+    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
+    //         console.log(object.oid);
+    //         _.each(object.block, function(block) {
+    //             console.log(">> " + block.bid);
+    //             _.each(block.node, function(node) {
+    //                 console.log(">>>> " + node.nid);
+    //             });
+    //         });
+    //     });
+    //     console.log("############# <END> #############");
+    // },
 
     getBlockType: function(blockTypeName) {
         if(_.contains(router.currentView.contentView.blockType, blockTypeName)) {
@@ -777,77 +867,77 @@ var FlowDiagramView =  Backbone.View.extend({
         return _.find(router.currentView.contentView.FlowChartTreeData, { oid: objectId } );
     },
 
-    findBlock: function(bid) {
-        var block = null;
-        _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-            _.each(object.block, function(_block) {
-                if(_block.bid === bid)
-                    block = _block;
-            })
-        });
-        return block;
-    },
+    // findBlock: function(bid) {
+    //     var block = null;
+    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
+    //         _.each(object.block, function(_block) {
+    //             if(_block.bid === bid)
+    //                 block = _block;
+    //         })
+    //     });
+    //     return block;
+    // },
 
-    findNode: function(nid) {
-        var node = null;
-        _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-            _.each(object.block, function(block) {
-                _.each(block.node, function(_node) {
-                    if(_node.nid === nid)
-                        node = _node; 
-                });
-            })
-        });
-        return node;
-    },
+    // findNode: function(nid) {
+    //     var node = null;
+    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
+    //         _.each(object.block, function(block) {
+    //             _.each(block.node, function(_node) {
+    //                 if(_node.nid === nid)
+    //                     node = _node; 
+    //             });
+    //         })
+    //     });
+    //     return node;
+    // },
 
-    // 노드가 호출 당하는 EDGE ID
-    findCallingNodeId: function(nid) {
-        var edge = _.filter(FC.edge, { tnid: nid });
-        return edge[0].fnid;
-    },
+    // // 노드가 호출 당하는 EDGE ID
+    // findCallingNodeId: function(nid) {
+    //     var edge = _.filter(FC.edge, { tnid: nid });
+    //     return edge[0].fnid;
+    // },
 
-    // 노드가 호출하는 EDGE ID
-    findCalleeNodeId: function(nid) {
-        var edge = _.filter(FC.edge, { tnid: nid });
-        return edge[0].fnid;
-    },
+    // // 노드가 호출하는 EDGE ID
+    // findCalleeNodeId: function(nid) {
+    //     var edge = _.filter(FC.edge, { tnid: nid });
+    //     return edge[0].fnid;
+    // },
 
-    findBlockOfNode: function(nid) {
-        var block = null;
-        _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
-            _.each(object.block, function(_block) {
-                _.each(_block.node, function(_node) {
-                    if(_node.nid === nid) {
-                        block = _block;
-                    }
-                });
-            })
-        });
-        return block;
-    },
+    // findBlockOfNode: function(nid) {
+    //     var block = null;
+    //     _.each(router.currentView.contentView.FlowChartTreeData, function(object) {
+    //         _.each(object.block, function(_block) {
+    //             _.each(_block.node, function(_node) {
+    //                 if(_node.nid === nid) {
+    //                     block = _block;
+    //                 }
+    //             });
+    //         })
+    //     });
+    //     return block;
+    // },
 
-    // 블럭에 포함된 노드의 링크 정보를 보낸다. DUPLICATED
-    findLink: function(blockId) {
-        var linkList = [];
+    // // 블럭에 포함된 노드의 링크 정보를 보낸다. DUPLICATED
+    // findLink: function(blockId) {
+    //     var linkList = [];
 
-        _.each(FC.edge, function(edge) {
-            var link = {};
-            var nodeCell = router.currentView.contentView.findNodeCell(edge.fnid);
-            if(_.isUndefined(nodeCell)) 
-                return;
+    //     _.each(FC.edge, function(edge) {
+    //         var link = {};
+    //         var nodeCell = router.currentView.contentView.findNodeCell(edge.fnid);
+    //         if(_.isUndefined(nodeCell)) 
+    //             return;
 
-            //if(nodeCell.category === router.currentView.contentView.nodeType.StartJoint)
-            //    return;
+    //         //if(nodeCell.category === router.currentView.contentView.nodeType.StartJoint)
+    //         //    return;
 
-            link.from = edge.fnid;
-            link.to = edge.tnid;
-            link.fromSpot = router.currentView.contentView.spotType.Buttom;
-            link.toSpot = router.currentView.contentView.spotType.Top;
+    //         link.from = edge.fnid;
+    //         link.to = edge.tnid;
+    //         link.fromSpot = router.currentView.contentView.spotType.Buttom;
+    //         link.toSpot = router.currentView.contentView.spotType.Top;
 
-            linkList.push(link);
-        });
-    },
+    //         linkList.push(link);
+    //     });
+    // },
     // #endregion
 
     // BOOKMARK: MAKE > makeBlock
@@ -860,19 +950,19 @@ var FlowDiagramView =  Backbone.View.extend({
 
         this.makeStartNode();
         this.makeEndNode();
-        this.makeStartLink(object.rootBlock.bid);
-        this.makeEndLink(object.rootBlock.bid);
+        this.makeStartLink(object.block.bid);
+        this.makeEndLink(object.block.bid);
 
         var rootCell = {};
-        rootCell.cid = object.rootBlock.bid;
+        rootCell.cid = object.block.bid;
         rootCell.isGroup = true,
-        rootCell.group = object.rootBlock.pbid;
-        rootCell.name = object.rootBlock.btp;
-        rootCell.type = router.currentView.contentView.getBlockType(object.rootBlock.btp);
+        rootCell.group = object.block.pbid;
+        rootCell.name = object.block.btp;
+        rootCell.type = router.currentView.contentView.getBlockType(object.block.btp);
         rootCell.group = "";
         router.currentView.contentView.FlowChartData.push(rootCell);
 
-        _.each(object.rootBlock.block, function(block) {
+        _.each(object.block.children, function(block) {
             // var groupCell = {};
 
             // groupCell.cid = block.bid;
@@ -883,7 +973,7 @@ var FlowDiagramView =  Backbone.View.extend({
             // groupCell.category = router.currentView.contentView.blockType.None;
 //            router.currentView.contentView.FlowChartData.push(groupCell);
             router.currentView.contentView.makeSubBlock(block);
-            router.currentView.contentView.makeSubLink(block);
+            //router.currentView.contentView.makeSubLink(block);
         });
     },
 
@@ -923,24 +1013,24 @@ var FlowDiagramView =  Backbone.View.extend({
     },
 
     // DUPLICATE
-    makeLink: function(objectId) {
-        _.each(FC.edge, function(edge) {
-            var link = {};
-            var nodeCell = router.currentView.contentView.findNodeCell(edge.fnid);
-            if(_.isUndefined(nodeCell)) 
-                return;
+    // makeLink: function(objectId) {
+    //     _.each(FC.edge, function(edge) {
+    //         var link = {};
+    //         var nodeCell = router.currentView.contentView.findNodeCell(edge.fnid);
+    //         if(_.isUndefined(nodeCell)) 
+    //             return;
 
-            //if(nodeCell.category === router.currentView.contentView.nodeType.StartJoint)
-            //    return;
+    //         //if(nodeCell.category === router.currentView.contentView.nodeType.StartJoint)
+    //         //    return;
 
-            link.from = edge.fnid;
-            link.to = edge.tnid;
-            link.fromSpot = router.currentView.contentView.spotType.Buttom;
-            link.toSpot = router.currentView.contentView.spotType.Top;
+    //         link.from = edge.fnid;
+    //         link.to = edge.tnid;
+    //         link.fromSpot = router.currentView.contentView.spotType.Buttom;
+    //         link.toSpot = router.currentView.contentView.spotType.Top;
             
-            router.currentView.contentView.FlowLinkData.push(link);
-        });
-    },
+    //         router.currentView.contentView.FlowLinkData.push(link);
+    //     });
+    // },
 
     addBlockCell: function(block) {
         var blockCell = {};
@@ -972,6 +1062,9 @@ var FlowDiagramView =  Backbone.View.extend({
 
     // BOOKMARK: ADD > addEdgeCell
     addEdgeCell: function(edge) {
+        if(_.isUndefined(edge))
+            return;
+
         if(_.contains(router.currentView.contentView.FlowLinkData, {fnid: edge.fnid, tnid: edge.tnid }))
             return;
 
@@ -983,16 +1076,16 @@ var FlowDiagramView =  Backbone.View.extend({
         router.currentView.contentView.FlowLinkData.push(link);
     },
 
-    isNodeContainInBlock: function(block, nid) {
-        var isContain = false;
-        _.each(block.node, function(node) {
-            if(node.nid === nid ) {
-                isContain = true;
-            }
-        })
+    // isNodeContainInBlock: function(block, nid) {
+    //     var isContain = false;
+    //     _.each(block.node, function(node) {
+    //         if(node.nid === nid ) {
+    //             isContain = true;
+    //         }
+    //     })
 
-        return isContain;
-    },
+    //     return isContain;
+    // },
 
     // #region makeStateMent 
     // BOOKMARK: MAKE > makeStateMentBlock
@@ -1017,9 +1110,11 @@ var FlowDiagramView =  Backbone.View.extend({
         });
 
         _.each(block.edge, function(edge) {
-            if( _.contains(nodeList, edge.tnid)) {
-                router.currentView.contentView.addEdgeCell(edge);
-            }
+            router.currentView.contentView.addEdgeCell(edge);
+
+            // if( _.contains(nodeList, edge.tnid)) {
+            //     router.currentView.contentView.addEdgeCell(edge);
+            // }
         });
 
         //  _.each(block.edge, function(edge) {
@@ -1185,7 +1280,6 @@ var FlowDiagramView =  Backbone.View.extend({
         loopLink.toSpot = router.currentView.contentView.spotType.Top;
         router.currentView.contentView.FlowLinkData.push(loopLink);
 
-
         var elseLink = {};
         elseLink.from = loopCondition.cid;
         elseLink.to = endLoop.nid;
@@ -1204,19 +1298,6 @@ var FlowDiagramView =  Backbone.View.extend({
         ifLink.text = "Y";
         ifLink.visible = true;
         router.currentView.contentView.FlowLinkData.push(ifLink);
-    },
-
-    removelink: function(nid) {
-        
-        if(_.contains(router.currentView.contentView.FlowLinkData, { from: nid} )) {
-            console.log("exist");
-        } else {
-            console.log("not exist");
-        }
-
-            
-
-        //router.currentView.contentView.FlowLinkData.pop()
     },
 
     makeLoopConditionNode: function(block) {
@@ -1392,17 +1473,16 @@ var FlowDiagramView =  Backbone.View.extend({
         router.currentView.contentView.FlowLinkData.push(link);
     },
 
+
     initNode: function() {
+        this.generateData(FC);
+
         // 6: if
         // 2: try
         // 5: loop
         var object_id = "6";
 
-        
-        this.generateData();
         this.makeBlock(object_id);
-
-        
         //this.makeLink(object_id);
 
         this.initModel();
