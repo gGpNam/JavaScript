@@ -22,7 +22,8 @@ var FlowDiagramView =  Backbone.View.extend({
             TryCatchFinally: "TryCatchFinally",
             Try: "TryBlock",
             CatchList: "CatchList",
-            CatchBlock: "CatchBlock"
+            CatchBlock: "CatchBlock",
+            Finally: "FinalBlock"
         };
 
         this.nodeType = {
@@ -193,7 +194,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                            {
                                                                font: this.properties.defaultFont,
                                                                stroke: "whitesmoke"
-                                                           })),
+                                                           }))
                                          );
 
         var endNodeTemplate = this.$go(go.Node, "Spot",
@@ -224,7 +225,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                        margin: 5,
                                                        stroke: "black"
                                                    },
-                                                   new go.Binding("text", "name")));
+                                                   new go.Binding("text", "cid")));
 
         var ifNodeTemplate = this.$go(go.Node, "Auto",
                                          this.nodeStype(),
@@ -257,37 +258,37 @@ var FlowDiagramView =  Backbone.View.extend({
                                                            },
                                                            new go.Binding("text", "name"))));
 
-        var startJointNodeTemplate = this.$go(go.Node, "Spot",
-                                              this.nodeStype(),
-                                              this.$go(go.Shape, "Ellipse",
-                                                       {
-                                                           minSize: new go.Size(10, 10),
-                                                           maxSize: new go.Size(10, 10),
-                                                           fill: this.properties.defaultJointColor,
-                                                           stroke: null 
-                                                        }));
-
-        var endJointNodeTemplate = this.$go(go.Node, "Spot",
-                                            this.nodeStype(),
-                                            this.$go(go.Shape, "Ellipse",
-                                                     {
-                                                         minSize: new go.Size(10, 10),
-                                                         maxSize: new go.Size(10, 10),
-                                                         fill: "red",
-                                                         stroke: null
-                                                     }));
-
         // var startJointNodeTemplate = this.$go(go.Node, "Spot",
         //                                       this.nodeStype(),
-        //                                       this.$go(go.TextBlock, { stroke: "red" },
-        //                                                new go.Binding("text", "cid"),
-        //                                                new go.Binding("visible", "visible")));
+        //                                       this.$go(go.Shape, "Ellipse",
+        //                                                {
+        //                                                    minSize: new go.Size(10, 10),
+        //                                                    maxSize: new go.Size(10, 10),
+        //                                                    fill: this.properties.defaultJointColor,
+        //                                                    stroke: null 
+        //                                                 }));
 
         // var endJointNodeTemplate = this.$go(go.Node, "Spot",
-        //                                this.nodeStype(),
-        //                                this.$go(go.TextBlock, { stroke: "white" },
-        //                                                new go.Binding("text", "cid"),
-        //                                                new go.Binding("visible", "visible"))); 
+        //                                     this.nodeStype(),
+        //                                     this.$go(go.Shape, "Ellipse",
+        //                                              {
+        //                                                  minSize: new go.Size(10, 10),
+        //                                                  maxSize: new go.Size(10, 10),
+        //                                                  fill: "red",
+        //                                                  stroke: null
+        //                                              }));
+
+        var startJointNodeTemplate = this.$go(go.Node, "Spot",
+                                              this.nodeStype(),
+                                              this.$go(go.TextBlock, { stroke: "red" },
+                                                       new go.Binding("text", "cid"),
+                                                       new go.Binding("visible", "visible")));
+
+        var endJointNodeTemplate = this.$go(go.Node, "Spot",
+                                       this.nodeStype(),
+                                       this.$go(go.TextBlock, { stroke: "white" },
+                                                       new go.Binding("text", "cid"),
+                                                       new go.Binding("visible", "visible"))); 
 
         var templmap = new go.Map("string", go.Node);
 
@@ -358,7 +359,6 @@ var FlowDiagramView =  Backbone.View.extend({
 
         var defaultGroupTemplate = this.$go(go.Group, "Auto",
                                             {
-                                                
                                                 layout: this.layoutStyle(),
                                                 isSubGraphExpanded: true,
                                                 subGraphExpandedChanged: this.subGraphExpandedChanged
@@ -373,36 +373,14 @@ var FlowDiagramView =  Backbone.View.extend({
                                                                          { 
                                                                              font: "Bold 10pt Sans-Serif",
                                                                              wrap: go.TextBlock.WrapFit,
-                                                                             visible: false,
+                                                                             visible: true,
                                                                          },
-                                                                         new go.Binding("text", "cid"),
-                                                                    ),
+                                                                         new go.Binding("text", "cid")
+                                                                    )
                                                                 ),
                                                     this.$go(go.Placeholder,
                                                                 { padding: new go.Margin(0, 10), alignment: go.Spot.Center })));
                                                         
-        var catchBlockTemplate = this.$go(go.Group, "Auto",
-                                            {
-                                                layout: this.layoutStyle(),
-                                                isSubGraphExpanded: true,
-                                                subGraphExpandedChanged: this.subGraphExpandedChanged
-                                            },
-                                            this.$go(go.Shape, "RoundedRectangle",  // surrounds everything
-                                                        { parameter1: 10, fill: "rgba(128,128,128,0.33)" }),
-                                            this.$go(go.Panel, "Vertical",  { defaultAlignment: go.Spot.Left },
-                                                    this.$go(go.Panel, "Horizontal", // the header
-                                                                { defaultAlignment: go.Spot.Top  },
-                                                                this.$go("SubGraphExpanderButton"),  // this Panel acts as a Button
-                                                                this.$go(go.TextBlock, 
-                                                                        { font: "Bold 10pt Sans-Serif"},
-                                                                        new go.Binding("text", "name"),
-                                                                        new go.Binding("visible", "visible")
-                                                                    ),
-                                                                ),
-                                                    this.$go(go.Placeholder,
-                                                                { padding: new go.Margin(0, 10), alignment: go.Spot.Center })));
-
-
         var collapseGroupTemplate = this.$go(go.Group, "Auto",
                                             {
                                                 layout: this.layoutStyle(),
@@ -417,7 +395,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                                 this.$go("SubGraphExpanderButton"), 
                                                                 this.$go(go.TextBlock, 
                                                                         { font: "Bold 12pt Sans-Serif", text: "Statement", verticalAlignment: go.Spot.Center,
-                                                                        alignment: go.Spot.Center }),
+                                                                        alignment: go.Spot.Center })
                                                                 )));
 
         var ifCollapseGroupTemplate = this.$go(go.Group, "Auto",
@@ -434,16 +412,16 @@ var FlowDiagramView =  Backbone.View.extend({
                                                     this.$go("SubGraphExpanderButton"),  
                                                     this.$go(go.TextBlock, 
                                                             { font: "Bold 12pt Sans-Serif", text: "If", verticalAlignment: go.Spot.Center,
-                                                            alignment: go.Spot.Center }),
+                                                            alignment: go.Spot.Center })
                                                     )));
 
-        var loopCollapseGroupTemplate = this.$go(go.Group, "Auto",
+        var loopWhileCollapseGroupTemplate = this.$go(go.Group, "Auto",
                                 {
                                     layout: this.$go(go.TreeLayout, { angle: 90 }),
                                                         isSubGraphExpanded: false,
                                                         subGraphExpandedChanged: this.subGraphExpandedChanged
                                 },
-                                this.$go(go.Shape, "Decision", 
+                                this.$go(go.Shape, "LoopLimit", 
                                             { width: 150, height: 50, parameter1: 5, fill: "#79C900" }),
                                 this.$go(go.Panel, "Vertical", { defaultAlignment: go.Spot.Left },
                                             this.$go(go.Panel, "Horizontal",
@@ -451,7 +429,24 @@ var FlowDiagramView =  Backbone.View.extend({
                                                     this.$go("SubGraphExpanderButton"),  
                                                     this.$go(go.TextBlock, 
                                                             { font: "Bold 12pt Sans-Serif", text: "Loop", verticalAlignment: go.Spot.Center,
-                                                            alignment: go.Spot.Center }),
+                                                            alignment: go.Spot.Center })
+                                                    )));
+
+        var loopDoCollapseGroupTemplate = this.$go(go.Group, "Auto",
+                                {
+                                    layout: this.$go(go.TreeLayout, { angle: 90 }),
+                                                        isSubGraphExpanded: false,
+                                                        subGraphExpandedChanged: this.subGraphExpandedChanged
+                                },
+                                this.$go(go.Shape, "LoopLimit", 
+                                            { width: 150, height: 50, parameter1: 5, fill: "#79C900" }),
+                                this.$go(go.Panel, "Vertical", { defaultAlignment: go.Spot.Left },
+                                            this.$go(go.Panel, "Horizontal",
+                                                    { defaultAlignment: go.Spot.Top },
+                                                    this.$go("SubGraphExpanderButton"),  
+                                                    this.$go(go.TextBlock, 
+                                                            { font: "Bold 12pt Sans-Serif", text: "LoopDo", verticalAlignment: go.Spot.Center,
+                                                            alignment: go.Spot.Center })
                                                     )));
 
 
@@ -469,28 +464,92 @@ var FlowDiagramView =  Backbone.View.extend({
                                                                 this.$go("SubGraphExpanderButton"), 
                                                                 this.$go(go.TextBlock, 
                                                                         { font: "Bold 12pt Sans-Serif", text: "Try", verticalAlignment: go.Spot.Center,
-                                                                        alignment: go.Spot.Center }),
+                                                                        alignment: go.Spot.Center })
                                                                 )));
+
+        var catchListCollapseGroupTemplate = this.$go(go.Group, "Auto",
+                                            {
+                                                layout: this.$go(go.TreeLayout, { angle: 90 }),
+                                                                    isSubGraphExpanded: false,
+                                                                    subGraphExpandedChanged: this.subGraphExpandedChanged
+                                            },
+                                            this.$go(go.Shape, "MultiProcess",
+                                                        { width: 150, height: 50, parameter1: 5, fill: "rgba(128,128,128,0.33)" }),
+                                            this.$go(go.Panel, "Vertical", { defaultAlignment: go.Spot.Left },
+                                                        this.$go(go.Panel, "Horizontal",
+                                                                { defaultAlignment: go.Spot.Top },
+                                                                this.$go("SubGraphExpanderButton"), 
+                                                                this.$go(go.TextBlock, 
+                                                                        { font: "Bold 12pt Sans-Serif", text: "CatchList", verticalAlignment: go.Spot.Center,
+                                                                        alignment: go.Spot.Center })
+                                                                )));
+
+        var finallyCollapseGroupTemplate = this.$go(go.Group, "Auto",
+                                            {
+                                                layout: this.$go(go.TreeLayout, { angle: 90 }),
+                                                                    isSubGraphExpanded: false,
+                                                                    subGraphExpandedChanged: this.subGraphExpandedChanged
+                                            },
+                                            this.$go(go.Shape, "Rectangle",
+                                                        { width: 150, height: 50, parameter1: 5, fill: "rgba(128,128,128,0.33)" }),
+                                            this.$go(go.Panel, "Vertical", { defaultAlignment: go.Spot.Left },
+                                                        this.$go(go.Panel, "Horizontal",
+                                                                { defaultAlignment: go.Spot.Top },
+                                                                this.$go("SubGraphExpanderButton"), 
+                                                                this.$go(go.TextBlock, 
+                                                                        { font: "Bold 12pt Sans-Serif", text: "Finally", verticalAlignment: go.Spot.Center,
+                                                                        alignment: go.Spot.Center })
+                                                                )));
+
+
 
         var groupTemplateMap = new go.Map("string", go.Group);
         //TODO: 블럭 템플릿 추가 작성
         groupTemplateMap.add(this.blockType.None, defaultGroupTemplate);
-        groupTemplateMap.add(this.blockType.CatchBlock, catchBlockTemplate);
         groupTemplateMap.add(this.blockType.Statement, collapseGroupTemplate);
         groupTemplateMap.add(this.blockType.If, ifCollapseGroupTemplate);
-        groupTemplateMap.add(this.blockType.Try, tryCollapseGroupTemplate)
+        groupTemplateMap.add(this.blockType.LoopWhile, loopWhileCollapseGroupTemplate);
+        groupTemplateMap.add(this.blockType.LoopDo, loopDoCollapseGroupTemplate);
+        groupTemplateMap.add(this.blockType.Try, tryCollapseGroupTemplate);
+        groupTemplateMap.add(this.blockType.CatchList, catchListCollapseGroupTemplate);
+        groupTemplateMap.add(this.blockType.Finally, finallyCollapseGroupTemplate);
+
         this.diagram.groupTemplateMap = groupTemplateMap;
     },
 
+    // BOOKMARK: FUNC > subGraphExpandedChanged
     subGraphExpandedChanged: function(group) {
-        //var groupData = this.diagram.model.findNodeDataForKey(group.key);
         if (group.isSubGraphExpanded === false) {
-            if(group.data.type === router.currentView.contentView.blockType.Statement) {
-                group.category = router.currentView.contentView.blockType.Statement;
-            } else if(group.data.type === router.currentView.contentView.blockType.If) {
-                group.category = router.currentView.contentView.blockType.If;
-            } else 
-                group.category = router.currentView.contentView.blockType.Statement;
+            switch(group.data.type) {
+                case router.currentView.contentView.blockType.Statement:
+                    group.category = router.currentView.contentView.blockType.Statement;
+                    break;
+                case router.currentView.contentView.blockType.If:
+                    group.category = router.currentView.contentView.blockType.If;
+                    break;
+                case router.currentView.contentView.blockType.LoopWhile:
+                case router.currentView.contentView.blockType.LoopFor:
+                    group.category = router.currentView.contentView.blockType.LoopWhile;
+                    break;
+                case router.currentView.contentView.blockType.LoopDo:
+                    group.category = router.currentView.contentView.blockType.LoopDo;
+                    break;
+                case router.currentView.contentView.blockType.TryCatchFinally:
+                    group.category = router.currentView.contentView.blockType.LoopDo;
+                    break;
+                case router.currentView.contentView.blockType.Try:
+                    group.category = router.currentView.contentView.blockType.Try;
+                    break;
+                case router.currentView.contentView.blockType.CatchList:
+                    group.category = router.currentView.contentView.blockType.CatchList;
+                    break;
+                case router.currentView.contentView.blockType.Final:
+                    group.category = router.currentView.contentView.blockType.Final;
+                    break;
+                default:
+                    return router.currentView.contentView.nodeType.Statement;
+                    break;
+            }
         }
         else {
             group.category = router.currentView.contentView.blockType.None;
@@ -1026,7 +1085,13 @@ var FlowDiagramView =  Backbone.View.extend({
         endLink.visible = false;
         router.currentView.contentView.FlowLinkData.push(endLink);
 
-        console.log(router.currentView.contentView.FlowLinkData);
+        router.currentView.contentView.makeLoopWhileLink(block);
+    },
+
+    makeLoopWhileLink: function(block) {
+        _.each(block.edge, function(edge) {
+            router.currentView.contentView.addEdgeCell(edge);
+        });
     },
 
     // BOOKMARK: MAKE > makeLoopDoBlock
@@ -1077,7 +1142,6 @@ var FlowDiagramView =  Backbone.View.extend({
         elseLink.text = "N";
         elseLink.visible = true;
         router.currentView.contentView.FlowLinkData.push(elseLink);
-
         
         var ifLink = {};
         ifLink.from = loopCondition.cid;
@@ -1087,6 +1151,14 @@ var FlowDiagramView =  Backbone.View.extend({
         ifLink.text = "Y";
         ifLink.visible = true;
         router.currentView.contentView.FlowLinkData.push(ifLink);
+
+        router.currentView.contentView.makeLoopDoLink(block);
+    },
+
+    makeLoopDoLink: function(block) {
+        _.each(block.edge, function(edge) {
+            router.currentView.contentView.addEdgeCell(edge);
+        });
     },
 
     makeLoopConditionNode: function(block) {
@@ -1195,7 +1267,7 @@ var FlowDiagramView =  Backbone.View.extend({
     // BOOKMARK MAKE > makeCatchBlockList
     makeCatchBlockList: function(block) {
         router.currentView.contentView.addBlockCell(block);
-        _.each(block.block, function(block) {
+        _.each(block.children, function(block) {
             router.currentView.contentView.makeSubBlock(block);
         });
 
@@ -1306,8 +1378,13 @@ var FlowDiagramView =  Backbone.View.extend({
     },
 
     initObjectList: function(objList) {
+
+        var traceItemList = _.filter(objList, function(trace) {
+            return trace.cmoid.length > 0
+        });
+
         $(".object-menu-list-container").dxDataGrid({
-            dataSource: objList,
+            dataSource: traceItemList,
             sorting: { mode: "none" },
             showColumnLines: false,
             showRowLines: false,
