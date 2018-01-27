@@ -116,24 +116,9 @@ var FlowDiagramView =  Backbone.View.extend({
     //     });
     // },
 
-    makePort: function(name, spot, output, input) {
-        // the port is basically just a small circle that has a white stroke when it is made visible
-        return this.$go(go.Shape, "Circle",
-                 {
-                    fill: "Black",  //transparent/ declare whether
-                    stroke: null,  // this is changed to "white" in the showPorts function
-                    desiredSize: new go.Size(8, 8),
-                    alignment: spot, alignmentFocus: spot,  // align the port on the main Shape
-                    portId: name,  // declare this object to be a "port"
-                    fromSpot: spot, toSpot: spot,  // declare where links may connect at this port
-                    fromLinkable: output, toLinkable: input,  // declare whether the user may draw links to/from here
-                    cursor: "pointer"  // show a different cursor to indicate potential link point
-                 });
-    },
-
     initDiagram: function() {
         this.$go = go.GraphObject.make;
-        var targetEl = $(".diagram-content-container")[0];
+        var targetEl = $(".flow-diagram-content-container")[0];
         var panelOptions = {
                 gridCellSize: new go.Size(30, 30)
             };
@@ -538,6 +523,11 @@ var FlowDiagramView =  Backbone.View.extend({
         this.initLinkData(response.edge);
     },
 
+    clearData: function() {
+        router.currentView.contentView.FlowChartData = [];
+        router.currentView.contentView.FlowLinkData = [];
+    },
+
     // #region data generate
     initObjectData: function(objectList) {
         _.each(objectList, function(object) {
@@ -745,6 +735,8 @@ var FlowDiagramView =  Backbone.View.extend({
 
     // BOOKMARK: MAKE > makeBlock
     makeBlock: function(objectId) {
+        router.currentView.contentView.clearData();
+
         var object =  this.findObject(objectId);
         // var rootBlock = _.find(object.block, { pbid: "-1"});
 
@@ -778,6 +770,10 @@ var FlowDiagramView =  Backbone.View.extend({
             router.currentView.contentView.makeSubBlock(block);
             //router.currentView.contentView.makeSubLink(block);
         });
+
+        router.currentView.contentView.diagram.model.addNodeDataCollection(router.currentView.contentView.FlowChartData);
+        router.currentView.contentView.diagram.model.addLinkDataCollection(router.currentView.contentView.FlowLinkData);
+
     },
 
     // BOOKMARK: MAKE > makeSubBlock
@@ -1273,8 +1269,7 @@ var FlowDiagramView =  Backbone.View.extend({
         // 6: if
         // 2: try
         // 5: loop
-        //var object_id = "6";
-        //this.makeBlock(object_id);
+        //this.makeBlock("6");
         //this.makeLink(object_id);
 
         router.currentView.contentView.initModel();
@@ -1310,11 +1305,12 @@ var FlowDiagramView =  Backbone.View.extend({
     },
 
     initObjectList: function(objList) {
-        $(".diagram-object").dxDataGrid({
+        $(".object-menu-list-container").dxDataGrid({
             dataSource: objList,
             sorting: { mode: "none" },
             showColumnLines: false,
             showRowLines: false,
+            showColumnHeaders: false,
             selection: {
                 mode: "single"
             },
@@ -1323,15 +1319,15 @@ var FlowDiagramView =  Backbone.View.extend({
                 dataField: 'onm',
                 width: "100%"
             }],
-            onCellClick: function(clickedCell) {
-                if(clickedCell.row.rowType == "data" && !_.isUndefined(clickedCell.rowIndex)) {
-                	console.log(clickedCell.data.oid);
-                	router.currentView.contentView.makeBlock(clickedCell.data.oid);
+            onContentReady: function(e) {
+                e.component.selectRowsByIndexes([0]);
+            },
+            onSelectionChanged: function(e) {
+                var data = e.component.getSelectedRowsData();
+                if(!_.isEmpty(data) && data.length > 0) {
+                    router.currentView.contentView.makeBlock(data[0].oid);
                 }
             },
-            onRowClick: function(e) {
-            	console.log("");
-            }
         });
     },
 
@@ -1349,6 +1345,20 @@ var FlowDiagramView =  Backbone.View.extend({
         this.initTemplate();
         this.initNode();
         //this.initContextMenu();
+
+        $(".diagram-toolbar").dxToolbar({
+            items: [{
+                location: 'after',
+                widget: 'dxButton',
+                options: {
+                    icon: 'chevronprev',
+                    onClick: function(e) {
+                        Backbone.history.history.back();
+                    }
+                }
+            }],
+            width: "100%",
+        });
     },
 
     render: function() {

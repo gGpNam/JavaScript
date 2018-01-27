@@ -1,0 +1,154 @@
+.diagram-container {
+    position: relative;
+}
+
+.diagram-content-container {
+    width: 100%;
+    height: 80%;
+    border: solid 1px whitesmoke;
+}
+
+.diagram-content-container-sub {
+    display: none;
+    width: 100%;
+    height: 80%;
+    min-height: 600px;
+    border: solid 1px whitesmoke;
+}
+
+.diagram-overview-container {
+    position: relative;
+    z-index: 300;
+    width: 170px;
+    height: 130px;
+    top: 20px;
+    right: 20px;
+    float: right;
+    background-color: slategrey;
+    border-top: solid 20px slategrey ;
+    border-left: solid 1px slategrey;
+    border-right: solid 1px slategrey;
+    border-bottom: solid 1px slategrey;
+    border-radius: 5px;
+}
+
+.diagram-overview-container:hover {
+    cursor: move;
+}
+
+.diagram-overview-title {
+    position: absolute;
+    height: 15px;
+    margin-left: 5px;
+    margin-top: -18px;
+    font-family: Arial, Meiryo, 'Nanum Gothic';
+    font-size: 14px;
+    font-weight: bold;
+    color: whitesmoke;
+}
+
+.diagram-overview-closebtn {
+    position: absolute;
+    right: 5px;
+    margin-top: -19px;
+    font-size: 14px;
+    color: whitesmoke;
+}
+
+.diagram-overview-closebtn:after {
+    content: '✖';
+}
+
+.diagram-overview-closebtn:hover {
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.diagram-overview-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: whitesmoke;
+    border-radius: 0px 0px 5px 5px;
+}
+
+.diagram-context-menu .diagram-context-menu-item-text {
+    font-family: Arial, Meiryo, 'Nanum Gothic';
+    padding: 0 20px 0 25px;
+}
+
+.diagram-context-menu .diagram-context-menu-extend-icon {
+    top: 5px;
+}
+
+.diagram-context-menu .diagram-context-menu-front-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+
+.diagram-expand-filter-dlg-box .dx-overlay-content {
+    height: 650px;
+}
+
+.diagram-expand-filter-table .dx-scrollable-wrapper,
+.diagram-expand-filter-table .dx-scrollable-container {
+    height: 100%;
+}
+
+.diagram-expand-filter-table .dx-datagrid-content .dx-datagrid-table .dx-row > td {
+    white-space: nowrap;
+}
+
+.diagram-relation-selector {
+    width: 250px;
+}
+
+.custom-item {
+    margin-left: 10px;
+}
+
+.custom-item .relation-name  {
+    float:left;
+    margin-left: 9px;
+}
+
+.custom-item > img {
+    float: left;
+    margin-top: 10px;
+}
+
+.dx-item.dx-list-item .custom-item > img {
+    margin-top: 2px;
+}
+
+.dx-item.dx-list-item .custom-item .relation-name {
+    margin-left: 3px;
+}
+
+.dx-item.dx-list-item .custom-item {
+    margin-left: 0px;
+}
+
+.relationmap-expand-filter-dlg-box .dx-overlay-content {
+    height: 650px;
+}
+
+.diagram-expand-filter-table .dx-scrollable-wrapper,
+.diagram-expand-filter-table .dx-scrollable-container {
+    height: 100%;
+}
+
+.diagram-expand-filter-table .dx-datagrid-content .dx-datagrid-table .dx-row > td {
+    white-space: nowrap;
+}
+
+.diagram-option-inner-relation-check .dx-checkbox-text {
+    padding-top: 7px;
+}
+
+.diagram-toolbar-box {
+    border: solid 1px whitesmoke;
+    padding: 5px;
+}

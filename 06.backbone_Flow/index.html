@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="diagram.css">
     <link rel="stylesheet" href="flowdiagram.css">
 
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -32,24 +34,30 @@
 
 </head>
 <body>
-    <div class="diagram-layout">
-        <div class="diagram-toolbar-box">
-            <div class="diagram-toolbar"></div>
+
+<div class="flow-diagram-layout">
+    <div class="diagram-toolbar-box">
+        <div class="diagram-toolbar"></div>
+    </div>
+    <div class="flow-diagram-box">
+        <div class="cm-float-left object-menu-box">
+            <div class="cm-float-left object-menu-list-container">
         </div>
-        <div class="diagram-container">
-            <div class="diagram-object-box">
-                    <div class="diagram-object"></div>
+        </div>
+            <div class="cm-float-left flow-diagram-container">
+                <div class="diagram-overview-container">
+                    <div class="diagram-overview-title">Overview</div>
+                    <div class="diagram-overview-closebtn"></div>
+                    <div class="diagram-overview-content"></div>
+                </div>
+                <div class="flow-diagram-content-container"></div>
+                <div class="diagram-context-menu"></div>
+                <div class="diagram-expand-filter-dialog"></div>
+                <div class="diagram-multilevel-expand-option-dialog"></div>
             </div>
-            <div class="diagram-overview-container">
-                <div class="diagram-overview-title"></div>
-                <div class="diagram-overview-closebtn"></div>
-                <div class="diagram-overview-content"></div>
-            </div>
-            <div class="diagram-content-container"></div>
-            <div class="diagram-context-menu"></div>
-            <div class="diagram-expand-filter-dialog"></div>
-            <div class="diagram-multilevel-expand-option-dialog"></div>
         </div>
     </div>
+</div>
+
 </body>
 </html>
