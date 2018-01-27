@@ -524,6 +524,7 @@ var FlowDiagramView =  Backbone.View.extend({
     },
 
     clearData: function() {
+        this.diagram.clear();
         router.currentView.contentView.FlowChartData = [];
         router.currentView.contentView.FlowLinkData = [];
     },
@@ -736,12 +737,10 @@ var FlowDiagramView =  Backbone.View.extend({
     // BOOKMARK: MAKE > makeBlock
     makeBlock: function(objectId) {
         router.currentView.contentView.clearData();
-
         var object =  this.findObject(objectId);
-        // var rootBlock = _.find(object.block, { pbid: "-1"});
-
-        // if(_.isUndefined(rootBlock))
-        //     return;
+    
+        if(_.isUndefined(object))
+            return;
 
         this.makeStartNode();
         this.makeEndNode();
@@ -933,7 +932,7 @@ var FlowDiagramView =  Backbone.View.extend({
             router.currentView.contentView.addNodeCell(node);
         });
         
-        _.each(block.block, function(childBlock) {
+        _.each(block.children, function(childBlock) {
             router.currentView.contentView.makeSubBlock(childBlock);
         });
 
@@ -982,7 +981,7 @@ var FlowDiagramView =  Backbone.View.extend({
             router.currentView.contentView.addNodeCell(node);
         });
 
-        _.each(block.block, function(childBlock) {
+        _.each(block.children, function(childBlock) {
             resultBlock = childBlock;
             router.currentView.contentView.makeSubBlock(childBlock);
         });
@@ -1026,6 +1025,8 @@ var FlowDiagramView =  Backbone.View.extend({
         endLink.toSpot = router.currentView.contentView.spotType.Top; 
         endLink.visible = false;
         router.currentView.contentView.FlowLinkData.push(endLink);
+
+        console.log(router.currentView.contentView.FlowLinkData);
     },
 
     // BOOKMARK: MAKE > makeLoopDoBlock
@@ -1048,7 +1049,7 @@ var FlowDiagramView =  Backbone.View.extend({
             router.currentView.contentView.addNodeCell(node);
         });
 
-        _.each(block.block, function(childBlock) {
+        _.each(block.children, function(childBlock) {
             resultBlock = childBlock;
             router.currentView.contentView.makeSubBlock(childBlock);
 
@@ -1111,7 +1112,7 @@ var FlowDiagramView =  Backbone.View.extend({
 
         router.currentView.contentView.addBlockCell(block);
 
-        _.each(block.block, function(childBlock) {
+        _.each(block.children, function(childBlock) {
             var type = router.currentView.contentView.getBlockType(childBlock.btp);
 
             if(type === router.currentView.contentView.blockType.Try) {
@@ -1216,7 +1217,7 @@ var FlowDiagramView =  Backbone.View.extend({
 
         router.currentView.contentView.addBlockCell(block);
 
-        _.each(block.block, function(block) {
+        _.each(block.children, function(block) {
             router.currentView.contentView.makeSubBlock(block);
         });
 
@@ -1277,8 +1278,8 @@ var FlowDiagramView =  Backbone.View.extend({
         // router.currentView.contentView.nodeInfos = response;
         // router.currentView.contentView.visitLinks(null, router.currentView.contentView.oid);
         // router.currentView.contentView.setGroupNodeInfos();
-        router.currentView.contentView.diagram.model.addNodeDataCollection(router.currentView.contentView.FlowChartData);
-        router.currentView.contentView.diagram.model.addLinkDataCollection(router.currentView.contentView.FlowLinkData);
+        //router.currentView.contentView.diagram.model.addNodeDataCollection(router.currentView.contentView.FlowChartData);
+        //router.currentView.contentView.diagram.model.addLinkDataCollection(router.currentView.contentView.FlowLinkData);
         // router.currentView.contentView.diagram.scroll('pixel', 'up', router.currentView.contentView.properties.diagramPaddingTop);
     },
 
