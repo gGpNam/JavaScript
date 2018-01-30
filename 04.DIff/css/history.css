@@ -1,0 +1,117 @@
+.change-history-list-grid-container .dx-datagrid-content .dx-row>td {
+    font-size: 13px;
+}
+
+.change-history-list-grid-container .dx-datagrid-headers .dx-row.dx-header-row {
+    border-color: #8898B9;
+    border-style: solid;
+    border-width: 3px 0 0 0;
+    background-color: #EEF1F7;
+    height: 43px;
+}
+
+.change-history-list-grid-container .dx-datagrid-headers .dx-datagrid-table .dx-row>td {
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center !important;
+}
+
+.change-history-list-grid-container .dx-datagrid-content .dx-datagrid-table .dx-row>td {
+    vertical-align: middle;
+    border-color: #DADFEA;
+    border-style: solid;
+    border-width: 0 1px 1px 1px;
+    white-space: nowrap;
+}
+
+.change-history-diff-info-area {
+    padding-top: 10px;
+    height: auto;
+}
+
+.change-history-diff-box {
+    height: auto;
+    overflow: overlay;
+}
+
+.change-history-diff-box-left,
+.change-history-diff-box-right {
+    width: 50%;
+    height: auto;
+}
+
+.change-history-diff-box-left {
+    float: left;
+}
+
+.change-history-diff-box-right {
+    float: right;
+}
+
+.change-history-diff-left,
+.change-history-diff-right {
+    height: auto;
+    border: 1px solid #DDDDDD;
+}
+
+.change-history-diff-left-info-box,
+.change-history-diff-right-info-box {
+    border: 1px solid #DDDDDD;
+    overflow: overlay;
+}
+
+.change-history-diff-left-info,
+.change-history-diff-right-info {
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    font-family: arial, Meiryo, 'Nanum Gothic';
+    font-size: 13px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.change-history-list-popover-box {
+    width: 800;
+    height: auto;
+    white-space: pre-wrap;
+}
+
+.change-history-diff-categor-insert-label,
+.change-history-diff-categor-delete-label,
+.change-history-diff-categor-modify-label {
+    vertical-align: middle;
+    font-family: arial, Meiryo, 'Nanum Gothic';
+    padding: 0px 10px 0px 10px;
+}
+
+.change-history-diff-categor-insert,
+.change-history-diff-categor-delete,
+.change-history-diff-categor-modify {
+    width: 15px;
+    height: 15px;
+    border: 1px solid black;
+}
+
+.change-history-diff-categor-insert,
+.CodeMirror-diff-insert {
+    background-color: paleturquoise;
+}
+
+.change-history-diff-categor-delete,
+.CodeMirror-diff-delete {
+    background-color: pink;
+}
+
+.change-history-diff-categor-modify,
+.CodeMirror-diff-modefied {
+    background-color: palegreen;
+}
+
+.change-history-diff-box .cm-s-eclipse .CodeMirror-activeline-background {
+    background: none;
+}
+
+.change-history-diff-category-box {
+    height: 35px;
+}

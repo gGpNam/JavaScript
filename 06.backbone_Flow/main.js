@@ -16,6 +16,7 @@ var FlowDiagramView =  Backbone.View.extend({
             None: "",
             Statement: "StatementBlock",
             If: "IF",
+            Loop: "LOOP_loop",
             LoopWhile: "LOOP_while",
             LoopFor: "LOOP_for",
             LoopDo: "LOOP_do",
@@ -93,7 +94,7 @@ var FlowDiagramView =  Backbone.View.extend({
         return this.$go(go.LayeredDigraphLayout, {
             direction: 90,
             layerSpacing: 10,
-            columnSpacing: 6,
+            columnSpacing: 10,
             setsPortSpots: false,
             isRealtime: false,
             //arrangement:  go.TreeLayout.ArrangementHorizontal
@@ -184,36 +185,38 @@ var FlowDiagramView =  Backbone.View.extend({
         var startNodeTemplate = this.$go(go.Node, "Spot",
                                          this.nodeStype(),
                                          this.$go(go.Panel, "Auto",
-                                                  this.$go(go.Shape, "RoundedRectangle",
-                                                           {
-                                                               minSize: new go.Size(100, 40),
-                                                               fill: "#79C900",
-                                                               stroke: null 
-                                                            }),
-                                                  this.$go(go.TextBlock, "Start",
-                                                           {
-                                                               font: this.properties.defaultFont,
-                                                               stroke: "whitesmoke"
-                                                           }))
-                                         );
-
+                                         this.$go(go.Shape, "RoundedRectangle",
+                                                  {
+                                                      minSize: new go.Size(100, 40),
+                                                      fill: "#79C900",
+                                                      stroke: null 
+                                                  }),
+                                         this.$go(go.TextBlock, "Start",
+                                                  {
+                                                      font: this.properties.defaultFont,
+                                                      stroke: "whitesmoke"
+                                                  })));
         var endNodeTemplate = this.$go(go.Node, "Spot",
                                        this.nodeStype(),
                                        this.$go(go.Panel, "Auto",
                                                 this.$go(go.Shape, "RoundedRectangle",
-                                                         {
-                                                             minSize: new go.Size(100, 40),
-                                                             fill: "#DC3C00",
-                                                             stroke: null 
-                                                         }),
-                                               this.$go(go.TextBlock, "End",
                                                         {
+                                                            minSize: new go.Size(100, 40),
+                                                            fill: "#DC3C00",
+                                                            stroke: null 
+                                                        }),
+                                                this.$go(go.TextBlock, "End",
+                                                         {
                                                             font: this.properties.defaultFont,
                                                             stroke: "whitesmoke"
-                                                        })));
-
+                                                         })));
         var stateBlockTemplate = this.$go(go.Node, "Auto",
-                                          new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+                                          {
+                                              doubleClick: function(e, node) {
+                                                  router.currentView.contentView.onNodeDoubleClick(e, node.part);
+                                              }
+                                          },
+                                          this.nodeStype(),
                                           this.$go(go.Shape, "RoundedRectangle", 
                                                    {
                                                        fill: "gold",
@@ -221,18 +224,15 @@ var FlowDiagramView =  Backbone.View.extend({
                                                     }),
                                           this.$go(go.TextBlock,
                                                    {
-                                                        font: this.properties.defaultFont,
-                                                        margin: 5,
-                                                        stroke: "black",
-                                                        isMultiline: true,
-                                                        //width: 100,
-                                                        maxSize: new go.Size(200, 100),
-                                                        //wrap: go.TextBlock.WrapFit
+                                                       font: this.properties.defaultFont,
+                                                       margin: 5,
+                                                       stroke: "black",
+                                                       isMultiline: true,
+                                                       maxSize: new go.Size(200, 100),
                                                    },
                                                    new go.Binding("text", "name")));
-
         var ifNodeTemplate = this.$go(go.Node, "Auto",
-                                         this.nodeStype(),
+                                      this.nodeStype(),
                                          this.$go(go.Panel, "Auto",
                                                   this.$go(go.Shape, "Diamond",
                                                            {
@@ -243,8 +243,11 @@ var FlowDiagramView =  Backbone.View.extend({
                                                   this.$go(go.TextBlock, "IF",
                                                            {
                                                                font: this.properties.defaultFont,
-                                                               stroke: "whitesmoke"
-                                                           })));
+                                                               stroke: "whitesmoke",
+                                                               isMultiline: true,
+                                                               maxSize: new go.Size(100, 40),
+                                                           },
+                                                           new go.Binding("text", "name"))));
 
         var loopNodeTemplate = this.$go(go.Node, "Auto",
                                          this.nodeStype(),
@@ -369,7 +372,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                             },
                                             new go.Binding("isSubGraphExpanded", "isSubGraphExpanded"),
                                             this.$go(go.Shape, "RoundedRectangle",  // surrounds everything
-                                                        { parameter1: 10, fill: "rgba(128,128,128,0.33)" }),
+                                                        { parameter1: 10, fill: "#BCBCBC" }),
                                             this.$go(go.Panel, "Vertical",  { defaultAlignment: go.Spot.Left },
                                                     this.$go(go.Panel, "Horizontal", // the header
                                                                 { defaultAlignment: go.Spot.Top  },
@@ -393,7 +396,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                 subGraphExpandedChanged: this.subGraphExpandedChanged
                                             },
                                             this.$go(go.Shape, "MultiProcess",
-                                                        { width: 150, height: 50, parameter1: 5, fill: "rgba(128,128,128,0.33)" }),
+                                                        { width: 150, height: 50, parameter1: 5, fill: "rgba(128,128,128,0.23)" }),
                                             this.$go(go.Panel, "Vertical", { defaultAlignment: go.Spot.Left },
                                                         this.$go(go.Panel, "Horizontal",
                                                                 { defaultAlignment: go.Spot.Top },
@@ -532,6 +535,7 @@ var FlowDiagramView =  Backbone.View.extend({
                 case router.currentView.contentView.blockType.If:
                     group.category = router.currentView.contentView.blockType.If;
                     break;
+                case router.currentView.contentView.blockType.Loop:
                 case router.currentView.contentView.blockType.LoopWhile:
                 case router.currentView.contentView.blockType.LoopFor:
                     group.category = router.currentView.contentView.blockType.LoopWhile;
@@ -559,6 +563,11 @@ var FlowDiagramView =  Backbone.View.extend({
         else {
             group.category = router.currentView.contentView.blockType.None;
         }
+    },
+
+    onNodeDoubleClick : function(e, node) {
+        var routerPath = "project/" + router.currentView.contentView.projectId + "/" + router.currentView.contentView.sid + "/source/viewer/" + router.currentView.contentView.path + "/" + node.data.sln;
+        router.navigate(routerPath, {trigger: true, replace: false});
     },
 
     makeStartNode: function() {
@@ -818,6 +827,11 @@ var FlowDiagramView =  Backbone.View.extend({
             case "STBLOCK_END":
                 return router.currentView.contentView.nodeType.EndJoint;
 
+            case "LOOP_loop_START":
+                return router.currentView.contentView.nodeType.StartJoint;
+            case "LOOP_loop_END":
+                return router.currentView.contentView.nodeType.EndJoint;
+
             case "LOOP_while_START":
                 return router.currentView.contentView.nodeType.StartJoint;
             case "LOOP_while_END":
@@ -910,14 +924,6 @@ var FlowDiagramView =  Backbone.View.extend({
         this.makeStartLink(object.block.bid);
         this.makeEndLink(object.block.bid);
 
-        // _.each(object.block.node, function(node) {
-        //     router.currentView.contentView.addNodeCell(node);
-        // });
-
-        // _.each(object.block.edge, function(edge) {
-        //     router.currentView.contentView.addEdgeCell(edge);
-        // });
-
         var rootCell = {};
         rootCell.cid = object.block.bid;
         rootCell.isGroup = true,
@@ -926,6 +932,20 @@ var FlowDiagramView =  Backbone.View.extend({
         rootCell.type = router.currentView.contentView.getBlockType(object.block.btp);
         rootCell.group = "";
         router.currentView.contentView.FlowChartData.push(rootCell);
+
+        _.each(object.block.node, function(node) {
+            var type = router.currentView.contentView.getNodeType(node.ntp);
+            if(type === router.currentView.contentView.nodeType.StartJoint ||
+               type === router.currentView.contentView.nodeType.EndJoint) {
+                return;
+            } else {
+                router.currentView.contentView.addNodeCell(node);
+            }
+        });
+
+        _.each(object.block.edge, function(edge) {
+            router.currentView.contentView.addEdgeCell(edge);
+        });
 
         _.each(object.block.children, function(block) {
             // var groupCell = {};
@@ -953,6 +973,8 @@ var FlowDiagramView =  Backbone.View.extend({
             this.makeStateMentBlock(subBlock);
         } else if(type === router.currentView.contentView.blockType.If) {
             this.makeIfElseBlock(subBlock);
+        } else if(type === router.currentView.contentView.blockType.Loop) {
+            this.makeLoopWhileBlock(subBlock);
         } else if(type === router.currentView.contentView.blockType.LoopWhile) {
             this.makeLoopWhileBlock(subBlock);
         } else if(type === router.currentView.contentView.blockType.LoopFor) {
@@ -1038,6 +1060,7 @@ var FlowDiagramView =  Backbone.View.extend({
         nodeCell.group = node.bid;
         nodeCell.category = router.currentView.contentView.getNodeType(node.ntp);
         nodeCell.name = node.txt;
+        nodeCell.sln = node.sln;
 
         router.currentView.contentView.FlowChartData.push(nodeCell);
     },
@@ -1076,6 +1099,10 @@ var FlowDiagramView =  Backbone.View.extend({
 
         _.each(block.node, function(node) {
             router.currentView.contentView.addNodeCell(node);
+        });
+
+        _.each(block.children, function(childBlock) {
+            router.currentView.contentView.makeSubBlock(childBlock);
         });
 
         router.currentView.contentView.makeStatementLink(block);
@@ -1191,19 +1218,19 @@ var FlowDiagramView =  Backbone.View.extend({
             s_else_link.visible = true;
             router.currentView.contentView.FlowLinkData.push(s_else_link);
 
-            var then_e_link = {};
-            then_e_link.from = thenBlock.bid;
-            then_e_link.to = endIfNode.nid;
-            then_e_link.fromSpot = router.currentView.contentView.spotType.Buttom;
-            then_e_link.toSpot = router.currentView.contentView.spotType.Top;
-            router.currentView.contentView.FlowLinkData.push(then_e_link);
+            // var then_e_link = {};
+            // then_e_link.from = thenBlock.bid;
+            // then_e_link.to = endIfNode.nid;
+            // then_e_link.fromSpot = router.currentView.contentView.spotType.Buttom;
+            // then_e_link.toSpot = router.currentView.contentView.spotType.Top;
+            // router.currentView.contentView.FlowLinkData.push(then_e_link);
 
-            var else_e_link = {};
-            else_e_link.from = elseBlock.bid;
-            else_e_link.to = endIfNode.nid;
-            else_e_link.fromSpot = router.currentView.contentView.spotType.Buttom;
-            else_e_link.toSpot = router.currentView.contentView.spotType.Top;
-            router.currentView.contentView.FlowLinkData.push(else_e_link);
+            // var else_e_link = {};
+            // else_e_link.from = elseBlock.bid;
+            // else_e_link.to = endIfNode.nid;
+            // else_e_link.fromSpot = router.currentView.contentView.spotType.Buttom;
+            // else_e_link.toSpot = router.currentView.contentView.spotType.Top;
+            // router.currentView.contentView.FlowLinkData.push(else_e_link);
         }
         
         router.currentView.contentView.makeIfElseLink(block);
@@ -1217,6 +1244,10 @@ var FlowDiagramView =  Backbone.View.extend({
             var link = {};
             var fromNodeType = router.currentView.contentView.getNodeType(edge.fntp);
             if(fromNodeType === router.currentView.contentView.nodeType.EndJoint) {
+                if(router.currentView.contentView.isParentBlock(edge.fbid, edge.tbid)) {
+                    return;
+                }
+
                 link.from = edge.fbid;
                 link.to = edge.tbid;
             } else {
@@ -1303,19 +1334,32 @@ var FlowDiagramView =  Backbone.View.extend({
 
     makeLoopWhileLink: function(block) {
         _.each(block.edge, function(edge) {
+            if(_.isUndefined(edge))
+                return;
+            
+            var link = {};
+            var fromNodeType = router.currentView.contentView.getNodeType(edge.fntp);
+            if(fromNodeType === router.currentView.contentView.nodeType.StartJoint) {
+                return;
+            } else {
+                if(edge.fbid === edge.tbid) {
+                    link.from = edge.fnid;
+                    link.to = edge.tnid;
+                } else {
+                    if(router.currentView.contentView.isParentBlock(edge.fbid, edge.tbid)) {
+                        link.from = edge.fbid;
+                        link.to = edge.tnid;
+                    } else {
+                        link.from = edge.fbid;
+                        link.to = edge.tbid;
+                    }
+                }
+            }
 
-            // var node = router.currentView.contentView.findNode(edge.fnid); 
-            // if(_.isUndefined(node))
-            //     return;
-
-            // var nodeType = router.currentView.contentView.getNodeType(node.ntp);
-            // if(nodeType === router.currentView.contentView.nodeType.StartJoint) {
-            //     startLoop = node;
-            // } else if(nodeType === router.currentView.contentView.nodeType.EndJoint) {
-            //     endLoop = node;
-            // }
-
-            router.currentView.contentView.addEdgeCell(edge);
+            link.fromSpot = router.currentView.contentView.spotType.Buttom;
+            link.toSpot = router.currentView.contentView.spotType.Top;
+            link.visible = false;
+            router.currentView.contentView.FlowLinkData.push(link);
         });
     },
 
@@ -1381,12 +1425,33 @@ var FlowDiagramView =  Backbone.View.extend({
     },
 
     makeLoopDoLink: function(block) {
-
-
         _.each(block.edge, function(edge) {
+            if(_.isUndefined(edge))
+                return;
+            
+            var link = {};
+            var fromNodeType = router.currentView.contentView.getNodeType(edge.fntp);
+            if(fromNodeType === router.currentView.contentView.nodeType.StartJoint) {
+                return;
+            } else {
+                if(edge.fbid === edge.tbid) {
+                    link.from = edge.fnid;
+                    link.to = edge.tnid;
+                } else {
+                    if(router.currentView.contentView.isParentBlock(edge.fbid, edge.tbid)) {
+                        link.from = edge.fbid;
+                        link.to = edge.tnid;
+                    } else {
+                        link.from = edge.fbid;
+                        link.to = edge.tbid;
+                    }
+                }
+            }
 
-
-            router.currentView.contentView.addEdgeCell(edge);
+            link.fromSpot = router.currentView.contentView.spotType.Buttom;
+            link.toSpot = router.currentView.contentView.spotType.Top;
+            link.visible = false;
+            router.currentView.contentView.FlowLinkData.push(link);
         });
     },
 
@@ -1396,7 +1461,7 @@ var FlowDiagramView =  Backbone.View.extend({
         nodeCell.isGroup = false;
         nodeCell.group = block.bid;
         nodeCell.category = router.currentView.contentView.nodeType.Loop;
-        nodeCell.name = " i > 10";
+        nodeCell.name = "Loop Condition";
         router.currentView.contentView.FlowChartData.push(nodeCell);
         return nodeCell;
     },
@@ -1455,6 +1520,13 @@ var FlowDiagramView =  Backbone.View.extend({
         try_catch_link.text = "Exception";
         try_catch_link.visible = true;
         router.currentView.contentView.FlowLinkData.push(try_catch_link);
+        
+        var catch__end_link = {};
+        catch__end_link.from = catchBlockList.bid;
+        catch__end_link.to = trycatchfinallyEnd.nid;
+        catch__end_link.fromSpot = router.currentView.contentView.spotType.Buttom;
+        catch__end_link.toSpot = router.currentView.contentView.spotType.Top;
+        router.currentView.contentView.FlowLinkData.push(catch__end_link);
 
         var try_e_link = {};
         try_e_link.from = tryBlock.bid;
@@ -1529,7 +1601,33 @@ var FlowDiagramView =  Backbone.View.extend({
 
     makeTryLink: function(block) {
         _.each(block.edge, function(edge) {
-            router.currentView.contentView.addEdgeCell(edge);
+            if(_.isUndefined(edge))
+                return;
+            
+            var link = {};
+            var fromNodeType = router.currentView.contentView.getNodeType(edge.fntp);
+            if(fromNodeType === router.currentView.contentView.nodeType.StartJoint) {
+                link.from = edge.fnid;
+                link.to = edge.tbid;
+            } else {
+                if(edge.fbid === edge.tbid) {
+                    link.from = edge.fnid;
+                    link.to = edge.tnid;
+                } else {
+                    if(router.currentView.contentView.isParentBlock(edge.fbid, edge.tbid)) {
+                        link.from = edge.fbid;
+                        link.to = edge.tnid;
+                    } else {
+                        link.from = edge.fbid;
+                        link.to = edge.tbid;
+                    }
+                }
+            }
+
+            link.fromSpot = router.currentView.contentView.spotType.Buttom;
+            link.toSpot = router.currentView.contentView.spotType.Top;
+            link.visible = false;
+            router.currentView.contentView.FlowLinkData.push(link);
         });
     },
 
@@ -1664,7 +1762,7 @@ var FlowDiagramView =  Backbone.View.extend({
         // 6: if
         // 2: try
         // 5: loop
-        this.makeBlock("2");
+        this.makeBlock("4");
         //this.makeLink(object_id);
 
         router.currentView.contentView.initModel();
