@@ -73,75 +73,34 @@ var DocumentView =  Backbone.View.extend({
         return this.$go(go.LayeredDigraphLayout, {
             direction: 90,
             layerSpacing: 10,
-            columnSpacing: 10,
+            columnSpacing: 6,
             setsPortSpots: false,
-            isRealtime: false,
-            //arrangement:  go.TreeLayout.ArrangementHorizontal
-            //layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
-            //layeringOption: go.LayeredDigraphLayout.LayerLongestPathSource,
-            //layeringOption: go.LayeredDigraphLayout.LayerOptimalLinkLength,
-            //initializeOption: go.LayeredDigraphLayout.InitDepthFirstOut,
-            //initializeOption: go.LayeredDigraphLayout.InitDepthFirstIn,
-            //initializeOption: go.LayeredDigraphLayout.InitNaive,
-            //aggressiveOption: go.LayeredDigraphLayout.AggressiveLess,
-            //aggressiveOption: go.LayeredDigraphLayout.AggressiveNone,
-            //aggressiveOption: go.LayeredDigraphLayout.AggressiveMore
-            packOption : 10
+            isRealtime: false
         });
     },
 
     initNodeTemplate: function() {
-        var ifNodeTemplate = this.$go(go.Node, "Auto",
-                                      this.nodeStype(),
-                                      this.$go(go.Shape, "Rectangle", { fill: "lightgray" }),
+        var ifNodeTemplate = this.$go(go.Node, "Auto", 
+                                      {
+                                         width: 90, height: 90,
+                                         selectionAdorned: false
+                                      },
+                                      new go.Binding("location", "loc", go.Point.parse),
+                                      this.$go(go.Shape, "FivePointedStar", { fill: "lightgray" }),
                                       this.$go(go.TextBlock,
-                                               { margin: 5},
-                                               new go.Binding("text", "cid")));
-                                                  
+                                                new go.Binding("text", "key")))
+
         this.diagram.nodeTemplate = ifNodeTemplate;
     },
 
     initLinkTemplate : function() {
         var defaultLinkTemplate = this.$go(go.Link,
-                                           {
-                                               adjusting: go.Link.Stretch,
-                                               routing: go.Link.AvoidsNodes,
-                                               curve: go.Link.JumpOver,
-                                               corner: 10, 
-                                               fromShortLength: 0,
-                                               toShortLength: 4,
-                                               fromEndSegmentLength: 65,//15,
-                                               toEndSegmentLength: 10,//15,
-                                               layerName: "LinkLayer",
-                                               relinkableFrom: true,
-                                               relinkableTo: true,
-                                               reshapable: true,
-                                               resegmentable: true,
-                                           },
-                                           new go.Binding("points").makeTwoWay(),
-                                           new go.Binding("fromSpot", "fromSpot", go.Spot.parse),
-                                           new go.Binding("toSpot", "toSpot", go.Spot.parse),
-                                           this.$go(go.Shape,  // the highlight shape, normally transparent
-                                                    { isPanelMain: true, strokeWidth: 8, stroke: "transparent", name: "HIGHLIGHT" }),
-                                           this.$go(go.Shape,  // the link path shape
-                                                    { isPanelMain: true, stroke: "gray", strokeWidth: 2 }),
+                                           this.$go(go.Shape),
+                                           this.$go(go.Shape,  // the "from" end arrowhead
+                                                    { fromArrow: "Chevron" }),
                                            this.$go(go.Shape,  // the arrowhead
-                                                    { toArrow: "standard", stroke: null, fill: "gray"}),
-                                           this.$go(go.Panel, "Auto",  // the link label, normally not visible
-                                                    { visible: false, name: "LABEL", segmentIndex: 2, segmentFraction: 0.5},
-                                                    new go.Binding("visible", "visible").makeTwoWay(),
-                                                    this.$go(go.Shape, "RoundedRectangle",  // the label shape
-                                                             { fill: "#F8F8F8", stroke: null }),
-                                                    this.$go(go.TextBlock, "Yes",  // the label
-                                                             {
-                                                                 textAlign: "center",
-                                                                 font: "10pt helvetica, arial, sans-serif",
-                                                                 stroke: "#333333",
-                                                                 editable: true
-                                                              },
-                                                    new go.Binding("text", "text"))));
+                                                    { toArrow: "StretchedDiamond", fill: "red" }));
 
-        var linkTemplateMap = new go.Map("string", go.Link);
         this.diagram.linkTemplate = defaultLinkTemplate;
     },
 
@@ -203,45 +162,14 @@ var DocumentView =  Backbone.View.extend({
     generateData: function() {
 
         var startCell = {};
-        startCell.cid = "79"
-        startCell.isGroup = true,
-        startCell.name = "79"
-        startCell.category = "";
+        startCell.cid = "Alpah";
+        startCell.loc=  "0 0";
         router.currentView.contentView.FlowChartData.push(startCell);
 
         var cell1 = {};
-        cell1.cid = "condition"
-        cell1.isGroup = false,
-        cell1.group = "79"
-        cell1.name = "condition"
-        cell1.category = "";
+        cell1.cid = "Beta"
+        cell1.loc=  "100 50";
         router.currentView.contentView.FlowChartData.push(cell1);
-
-        var group1 = {};
-        group1.cid = "80"
-        group1.isGroup = true,
-        group1.group = "79"
-        group1.name = "80"
-        group1.category = "";
-        router.currentView.contentView.FlowChartData.push(group1);
-
-        var cell2 = {};
-        cell2.cid = "statement"
-        cell2.isGroup = false,
-        cell2.group = "80"
-        cell2.name = "statement"
-        cell2.category = "";
-        router.currentView.contentView.FlowChartData.push(cell2);
-
-        var end = {};
-        end.cid = "end"
-        end.isGroup = false,
-        end.group = "79"
-        end.name = "end"
-        end.category = "";
-        router.currentView.contentView.FlowChartData.push(end);
-
-    
     },
 
     generateLink: function() {
@@ -254,26 +182,9 @@ var DocumentView =  Backbone.View.extend({
         // router.currentView.contentView.FlowLinkData.push(link);
 
         var link2 = {};
-        link2.from = "condition";
-        link2.to = "80";
-        link2.fromSpot = router.currentView.contentView.spotType.Buttom;
-        link2.toSpot =  router.currentView.contentView.spotType.Top;
+        link2.from = "Alpha";
+        link2.to = "Beta";
         router.currentView.contentView.FlowLinkData.push(link2);
-
-        var loop = {};
-        loop.from = "80";
-        loop.to = "end";
-        loop.fromSpot = router.currentView.contentView.spotType.Buttom;
-        loop.toSpot =  router.currentView.contentView.spotType.Top;
-        router.currentView.contentView.FlowLinkData.push(loop);
-
-        
-        var link3 = {};
-        link3.from = "condition";
-        link3.to = "end";
-        link3.fromSpot = router.currentView.contentView.spotType.Right;
-        link3.toSpot =  router.currentView.contentView.spotType.Right;
-        router.currentView.contentView.FlowLinkData.push(link3);
     },
 
     initNode: function() {
@@ -287,14 +198,14 @@ var DocumentView =  Backbone.View.extend({
         router.currentView.contentView.diagram.model.addLinkDataCollection(router.currentView.contentView.FlowLinkData);
 
         
-        // var nodeDataArray = [
-        //     { cid: "Alpha" }, { cid: "Beta" }
-        // ];
+        var nodeDataArray = [
+            { cid: "Alpha" }, { cid: "Beta" }
+        ];
 
-        // var linkDataArray = [
-        //     { from: "Alpha", to: "Beta", fromSpot: router.currentView.contentView.spotType.Buttom , toSpot: router.currentView.contentView.spotType.Top, text: "a->B" },
-        //     { from: "Beta", to: "Alpha", fromSpot: router.currentView.contentView.spotType.Right, toSpot: router.currentView.contentView.spotType.Right, text: "b->a" },
-        // ];
+        var linkDataArray = [
+            { from: "Alpha", to: "Beta", fromSpot: router.currentView.contentView.spotType.Buttom , toSpot: router.currentView.contentView.spotType.Top, text: "a->B" },
+            { from: "Beta", to: "Alpha", fromSpot: router.currentView.contentView.spotType.Right, toSpot: router.currentView.contentView.spotType.Right, text: "b->a" },
+        ];
 
 
         // router.currentView.contentView.diagram.model.addNodeDataCollection(nodeDataArray);

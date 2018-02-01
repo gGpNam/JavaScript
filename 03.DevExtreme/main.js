@@ -8,10 +8,16 @@ var router = {
 $(function() {
 var ProjectExplorerView =  Backbone.View.extend({
     initialize: function() {
+        this.$el = document.createElement("div");
+        this.template = "\
+        <div class='cm-project-explorer-container'>\
+            <div class='cm-project-explorer-content-area'>\
+            </div>\
+        </div>\
+        ";
         this.path = "/MicroStrategy Tutorial/AAA/BBBB/";
         this.cnt = 0;
     },
-
 
     appendExplorerItem: function(itemData, itemElement) {
         this.cnt++;
@@ -64,7 +70,7 @@ var ProjectExplorerView =  Backbone.View.extend({
             paginate: false,
         });
 
-        this.projectListCtrl = $(".cm-project-explorer-content-area").dxList({
+        this.projectListCtrl = this.$el.find(".cm-project-explorer-content-area").dxList({
             dataSource: this.explorerDataSource,
             noDataText: "",
             activeStateEnabled: false,
@@ -79,6 +85,7 @@ var ProjectExplorerView =  Backbone.View.extend({
     },
 
     render: function() {
+        this.$el.html(this.template);
         this.initComponents();
         return this;
     }
