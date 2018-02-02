@@ -30,7 +30,7 @@ var FlowDiagramView =  Backbone.View.extend({
             CatchGroup: "CatchGroup",
             CatchList: "CatchList",
             CatchBlock: "CatchBlock",
-            Finally: "FinalBlock"
+            Finally: "FinallyBlock"
         };
 
         this.nodeType = {
@@ -683,8 +683,8 @@ var FlowDiagramView =  Backbone.View.extend({
                     case router.currentView.contentView.blockType.CatchList:
                         group.category = router.currentView.contentView.blockType.CatchList;
                         break;
-                    case router.currentView.contentView.blockType.Final:
-                        group.category = router.currentView.contentView.blockType.Final;
+                    case router.currentView.contentView.blockType.Finally:
+                        group.category = router.currentView.contentView.blockType.Finally;
                         break;
                     default:
                         return router.currentView.contentView.nodeType.Statement;
@@ -1126,6 +1126,8 @@ var FlowDiagramView =  Backbone.View.extend({
             this.makeCatchBlockList(subBlock);
         } else if(type ===  router.currentView.contentView.blockType.CatchBlock) {
             this.makeCatchBlock(subBlock);
+        } else if(type ===  router.currentView.contentView.blockType.Finally) {
+            this.makeFinallyBlock(subBlock);
         }
     },
 
@@ -1616,6 +1618,7 @@ var FlowDiagramView =  Backbone.View.extend({
         var trycatchfinallyEnd = null;
         var tryBlock = null;
         var catchBlockList = null;
+        var finallyBlock = null;
 
         router.currentView.contentView.addBlockCell(block);
 
@@ -1627,6 +1630,9 @@ var FlowDiagramView =  Backbone.View.extend({
                 router.currentView.contentView.makeSubBlock(childBlock);
             } else if(type === router.currentView.contentView.blockType.CatchList) {
                 catchBlockList = childBlock;
+                router.currentView.contentView.makeSubBlock(childBlock);
+            } else if(type === router.currentView.contentView.blockType.Finally) {
+                finallyBlock = childBlock;
                 router.currentView.contentView.makeSubBlock(childBlock);
             }
         });
@@ -1870,6 +1876,57 @@ var FlowDiagramView =  Backbone.View.extend({
         });
     },
 
+    makeFinallyBlock: function(block) {
+        router.currentView.contentView.addBlockCell(block);
+        _.each(block.children, function(block) {
+            router.currentView.contentView.makeSubBlock(block);
+        });
+    
+        _.each(block.node, function(node) {
+            var nodeType = router.currentView.contentView.getNodeType(node.ntp); 
+            if(nodeType === router.currentView.contentView.nodeType.StartJoint) {
+                catchText = node.txt;
+            } else if(nodeType === router.currentView.contentView.nodeType.EndJoint) {
+                return;
+            }
+        });
+    
+        router.currentView.contentView.makeCatchLink(block);
+    },
+
+    makeFinallyLink: function (block) {
+        _.each(block.edge, function(edge) {
+            if(_.isUndefined(edge))
+                return;
+            
+            var link = {};
+            var fromNodeType = router.currentView.contentView.getNodeType(edge.fntp);
+            if(fromNodeType === router.currentView.contentView.nodeType.StartJoint) {
+                link.from = edge.fnid;
+                link.to = edge.tbid;
+            } else {
+                if(edge.fbid === edge.tbid) {
+                    link.from = edge.fnid;
+                    link.to = edge.tnid;
+                } else {
+                    if(router.currentView.contentView.isParentBlock(edge.fbid, edge.tbid)) {
+                        link.from = edge.fbid;
+                        link.to = edge.tnid;
+                    } else {
+                        link.from = edge.fbid;
+                        link.to = edge.tbid;
+                    }
+                }
+            }
+
+            link.fromSpot = router.currentView.contentView.spotType.Bottom;
+            link.toSpot = router.currentView.contentView.spotType.Top;
+            link.visible = false;
+            router.currentView.contentView.FlowLinkData.push(link);
+        });
+    },
+
+
     // #endregion
 
     findNodeCell: function(cellId) {
@@ -1901,14 +1958,22 @@ var FlowDiagramView =  Backbone.View.extend({
     // BOOKMARK INIT > initNode
     initNode: function() {
         //router.currentView.contentView.generateData(CM_COLLECT_SET_DELETE);
-        router.currentView.contentView.generateData(CallSPDAO);
+        //router.currentView.contentView.generateData(CallSPDAO);
+        router.currentView.contentView.generateData(UserDAO);
+
         //router.currentView.contentView.initObjectList(FC.obj);
         
         // 6: if
         // 2: try
         // 5: loop
-        this.makeBlock("2");
 
+        // UserDAO asds
+        // try: 9
+        this.makeBlock("9");
+
+        // CybercenterAction
+        // 2: case 
+        
         //this.makeLink(object_id);
 
         router.currentView.contentView.initModel();
