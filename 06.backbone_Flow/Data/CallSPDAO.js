@@ -1,4 +1,4 @@
-var CallSPDAO = {
+var DATA = {
     "obj": [
         {
             "oid": "0",

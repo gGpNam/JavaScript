@@ -1,4 +1,5 @@
-var UserDAO = {
+var DATA =
+{
         "obj": [
             {
                 "oid": "0",

@@ -1,4 +1,4 @@
-var CM_COLLECT_SET_DELETE =
+var DATA =
 {
     "obj": [
         {
