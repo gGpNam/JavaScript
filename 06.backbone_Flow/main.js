@@ -27,7 +27,7 @@ var FlowDiagramView =  Backbone.View.extend({
             LoopDo: "LOOP_do",
             TryCatchFinally: "TryCatchFinally",
             Try: "TryBlock",
-            CatchGroup: "CatchGroup",
+            NamedGroup: "NamedGroup",
             CatchList: "CatchList",
             CatchBlock: "CatchBlock",
             Finally: "FinallyBlock",
@@ -516,7 +516,7 @@ var FlowDiagramView =  Backbone.View.extend({
                                                     this.$go(go.Placeholder,
                                                                 { padding: new go.Margin(0, 10), alignment: go.Spot.Center })));
 
-        var catchGroupTemplate = this.$go(go.Group, "Auto",
+        var namedGroupTemplate = this.$go(go.Group, "Auto",
                                             {
                                                 layout: this.layoutStyle(),
                                                 subGraphExpandedChanged: this.subGraphExpandedChanged
@@ -716,10 +716,27 @@ var FlowDiagramView =  Backbone.View.extend({
                                                                         { font: this.properties.collapseFont, text: "Switch", verticalAlignment: go.Spot.Center,
                                                                         alignment: go.Spot.Center })
                                                                 )));
+        var caseCollapseGroupTemplate = this.$go(go.Group, "Auto",
+                                            {
+                                                layout: this.layoutStyle(),
+                                                isSubGraphExpanded: false,
+                                                subGraphExpandedChanged: this.subGraphExpandedChanged
+                                            },
+                                            new go.Binding("isSubGraphExpanded").makeTwoWay(),
+                                            this.$go(go.Shape, "MultiProcess",
+                                                        { width: 150, height: 50, parameter1: 5, fill: "rgba(128,128,128,0.23)" }),
+                                            this.$go(go.Panel, "Vertical", { defaultAlignment: go.Spot.Left },
+                                                        this.$go(go.Panel, "Horizontal",
+                                                                { defaultAlignment: go.Spot.Top },
+                                                                this.$go("SubGraphExpanderButton"), 
+                                                                this.$go(go.TextBlock, 
+                                                                        { font: this.properties.collapseFont, text: "Case", verticalAlignment: go.Spot.Center,
+                                                                        alignment: go.Spot.Center })
+                                                                )));
 
         var groupTemplateMap = new go.Map("string", go.Group);
         groupTemplateMap.add(this.blockType.None, defaultGroupTemplate);
-        groupTemplateMap.add(this.blockType.CatchGroup, catchGroupTemplate);
+        groupTemplateMap.add(this.blockType.NamedGroup, namedGroupTemplate);
         groupTemplateMap.add(this.blockType.Try, tryCollapseGroupTemplate);
         groupTemplateMap.add(this.blockType.TryCatchFinally, tryCatchCollapseTemplate);
         groupTemplateMap.add(this.blockType.Statement, collapseGroupTemplate);
@@ -730,6 +747,7 @@ var FlowDiagramView =  Backbone.View.extend({
         groupTemplateMap.add(this.blockType.CatchBlock , catchBlockCollapseGroupTemplate);
         groupTemplateMap.add(this.blockType.Finally, finallyCollapseGroupTemplate);
         groupTemplateMap.add(this.blockType.Switch, switchCollapseGroupTemplate);
+        groupTemplateMap.add(this.blockType.Case, caseCollapseGroupTemplate);
         this.diagram.groupTemplateMap = groupTemplateMap;
     }, 
 
@@ -740,7 +758,7 @@ var FlowDiagramView =  Backbone.View.extend({
             if (group.isSubGraphExpanded) {
                 if(group.data.type === router.currentView.contentView.blockType.CatchBlock ||
                    group.data.type === router.currentView.contentView.blockType.Case)
-                    router.currentView.contentView.diagram.model.setCategoryForNodeData(group.data, router.currentView.contentView.blockType.CatchGroup);
+                    router.currentView.contentView.diagram.model.setCategoryForNodeData(group.data, router.currentView.contentView.blockType.NamedGroup);
                 else 
                     router.currentView.contentView.diagram.model.setCategoryForNodeData(group.data, "");
             } else {
@@ -1092,7 +1110,7 @@ var FlowDiagramView =  Backbone.View.extend({
                 return router.currentView.contentView.nodeType.Return;
             case "GOTO":
                 return router.currentView.contentView.nodeType.Goto;
-            case "CONTINUE":
+            case "Continue":
                 return router.currentView.contentView.nodeType.Continue;
             case "break":
                 return router.currentView.contentView.nodeType.Break;
@@ -1311,13 +1329,16 @@ var FlowDiagramView =  Backbone.View.extend({
                 blockCell.category = router.currentView.contentView.blockType.CatchList;
                 break;
             case router.currentView.contentView.blockType.CatchBlock:
-                blockCell.category = router.currentView.contentView.blockType.CatchGroup;
+                blockCell.category = router.currentView.contentView.blockType.CatchBlock;
                 break;
             case router.currentView.contentView.blockType.Finally:
                 blockCell.category = router.currentView.contentView.blockType.Finally;
                 break;
             case router.currentView.contentView.blockType.Switch:
                 blockCell.category = router.currentView.contentView.blockType.Switch;
+                break;
+            case router.currentView.contentView.blockType.Case:
+                blockCell.category = router.currentView.contentView.blockType.Case;
                 break;
             default:
                 blockCell.category = router.currentView.contentView.blockType.None;
@@ -1391,28 +1412,31 @@ var FlowDiagramView =  Backbone.View.extend({
             if(_.isUndefined(edge))
                 return;
             
-            var link = {};
-            var fromNodeType = router.currentView.contentView.getNodeType(edge.fntp);
-            if(fromNodeType === router.currentView.contentView.nodeType.StartJoint) {
-                link.from = edge.fnid;
-                link.to = edge.tnid;
-            } else if (fromNodeType === router.currentView.contentView.nodeType.Break){
-                link.from = edge.fnid;
-                link.to = edge.tnid;
-            } else {
-                if(edge.fbid === edge.tbid) {
+                var link = {};
+                var fromNodeType = router.currentView.contentView.getNodeType(edge.fntp);
+                if(fromNodeType === router.currentView.contentView.nodeType.StartJoint) {
+                    link.from = edge.fnid;
+                    link.to = edge.tnid;
+                } else if (fromNodeType === router.currentView.contentView.nodeType.Break){
+                    link.from = edge.fnid;
+                    link.to = edge.tnid;
+                } else if (fromNodeType === router.currentView.contentView.nodeType.Continue) {
                     link.from = edge.fnid;
                     link.to = edge.tnid;
                 } else {
-                    if(router.currentView.contentView.isParentBlock(edge.fbid, edge.tbid)) {
-                        link.from = edge.fbid;
+                    if(edge.fbid === edge.tbid) {
+                        link.from = edge.fnid;
                         link.to = edge.tnid;
                     } else {
-                        link.from = edge.fbid;
-                        link.to = edge.tbid;
+                        if(router.currentView.contentView.isParentBlock(edge.fbid, edge.tbid)) {
+                            link.from = edge.fbid;
+                            link.to = edge.tnid;
+                        } else {
+                            link.from = edge.fbid;
+                            link.to = edge.tbid;
+                        }
                     }
                 }
-            }
 
             link.fromSpot = router.currentView.contentView.spotType.Bottom;
             link.toSpot = router.currentView.contentView.spotType.Top;
