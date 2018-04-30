@@ -1,3 +1,10 @@
+var router = {
+    currentView: {
+        contentView: {
+        }
+    }
+}
+
 $(function() {
 var SourceView =  Backbone.View.extend({
     initialize: function() {
@@ -5,6 +12,12 @@ var SourceView =  Backbone.View.extend({
 
     initComponents: function() {
 
+        $(".btn-line").dxButton({
+            text: "LINE",
+            onClick: function(e) {
+                router.currentView.contentView.scrollToLine(1);
+            }
+        });
     },
 
     initViewer: function() {
@@ -33,7 +46,7 @@ var SourceView =  Backbone.View.extend({
         //window.scrollTo(0, doc.cm.heightAtLine(line) - marginFromTop);
         
         this.editor.setCursor(line);
-        this.editor.scrollIntoView(line);
+        //this.editor.scrollIntoView(line);
     },
 
     render: function() {
@@ -44,5 +57,7 @@ var SourceView =  Backbone.View.extend({
 });
 
     var SourceView = new SourceView();
+    router.currentView.contentView = SourceView;
+
     SourceView.render();
 });
