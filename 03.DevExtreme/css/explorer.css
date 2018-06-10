@@ -1,44 +1,7 @@
-.cm-project-explorer-container {
-    width: 100%;
+#tree-list-demo {
+    min-height: 700px;
 }
 
-.cm-project-explorer-content-area .dx-list-item-content {
-    float: auto;
-    display: flex;
-}
-
-.cm-project-explorer-list-item-icon {
-    width: 30px;
-    height: 25px;
-    line-height: 25px;
-    vertical-align: middle;
-    text-align: center;
-    color: #8197B3;
-}
-
-.cm-project-explorer-list-item-name {
-    width: 100%;
-    height: 25px;
-    line-height: 25px;
-    vertical-align: middle;
-    font-size: 14px;
-    color: #0366D6;
-    padding-left: 10px;
-}
-
-.cm-project-explorer-list-item-type {
-    width: 300px;
-    height: 25px;
-    line-height: 25px;
-    vertical-align: middle;
-    font-size: 14px;
-    color: #6D737D;
-}
-
-.cm-project-explorer-type-parent {
-    font-weight: bold;
-}
-
-.cm-project-explorer-content-area .dx-list-item-content {
-    padding: 5px 5px;
+#employees {
+    max-height: 700px;
 }

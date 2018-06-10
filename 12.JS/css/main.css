@@ -1,0 +1,21 @@
+.cm-hide {
+    display: none !important;
+}
+
+.mydiv {
+    width : 200px;
+    height: 200px;
+    border : 1px solid yellow;
+}
+
+.childDiv1 {
+    width : 200px;
+    height: 150px;
+    border : 1px solid black;
+}
+
+.childDiv2 {
+    width : 200px;
+    height: 50px;
+    border : 1px solid black;
+}
