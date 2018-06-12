@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<!-- 
+
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/diagram.css">
     <link rel="stylesheet" href="css/flowdiagram.css">
-	-->
 	
 	<script type="text/javascript" src="lib/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="lib/underscore/1.8.3/underscore.min.js"></script>
@@ -21,45 +20,53 @@
 
     <script type="text/javascript" src="lib/backbone/1.3.3/backbone.min.js"></script>
 
+
     <!-- build:libjs gojs/1.7.27/go.js -->
-    <script type="text/javascript"src="lib/gojs/1.7.27/go-debug.js"></script> 
+    <script type="text/javascript" src="lib/gojs/1.7.27/go-debug.js"></script>
     <!-- endbuild -->
 
+    <!-- Template Begin -->
+    <script id="backbone-templates-flow-diagram" type="text/template">
+        <div class="diagram-layout-box">
+            <div class="rect diagram-object-list-box" data-options="dxItem: {ratio:0, baseSize: 300}">
+                <div class="cm-default-table cm-default-scroll-table diagram-object-list"></div>
+                <div class="cm-default-table cm-default-scroll-table diagram-trace-stack-list"></div>
+            </div>
+            <div class="rect diagram-contents-box" data-options="dxItem: {ratio: 1}">
+                <div class="diagram-toolbar-box">
+                    <div class="diagram-toolbar"></div>
+                </div>
+                <div class="diagram-container">
+                    <div class="diagram-overview-container">
+                        <div class="diagram-overview-title">Overview</div>
+                        <div class="diagram-overview-closebtn"></div>
+                        <div class="diagram-overview-content"></div>
+                    </div>
+                    <div class="diagram-content-container"></div>
+                    <div class="diagram-context-menu"></div>
+                </div>
+            </div>
+        </div>
+    </script>
+    <!-- Template End -->
+
     <!-- Data Begin-->
-    <!--<script type="text/javascript" src="Data/PlrepaymentsearchAction.js"></script> -->
-    <!--<script type="text/javascript" src="Data/CallSPDAO.js"></script> -->
+    <script type="text/javascript" src="Data/AFBARENA_OBJ.js"></script> 
+    <script type="text/javascript" src="Data/AFBARENA.js"></script>
     <!--<script type="text/javascript" src="Data/CM_COLLECT_SET_DELETE.js"></script>-->
     <!--<script type="text/javascript" src="Data/CybercenterAction.js"></script>--> <!-- big data -->
     <!-- Data End -->
 
     <!-- Common Begin-->
     <script type="text/javascript" src="gtsaascm.js"></script>
-    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="index.js"></script>
     <!-- Common End -->
 
-    <script type="text/javascript" src="project_list_view.js"></script>
+    <script type="text/javascript" src="main_view.js"></script>
+    <!--<script type="text/javascript" src="js/backbone/views/project/project_list_view.js"></script>-->
 
 </head>
 <body>
-
-<div class="flow-diagram-layout">
-    <div class="diagram-toolbar-box">
-        <div class="diagram-toolbar"></div>
-    </div>
-    <div class="flow-diagram-box">
-        <div class="cm-float-left object-menu-box">
-            <div class="cm-float-left object-menu-list-container">
-        </div>
-        </div>
-            <div class="cm-float-left flow-diagram-container">
-                <div class="flow-diagram-content-container"></div>
-                <div class="diagram-context-menu"></div>
-                <div class="diagram-expand-filter-dialog"></div>
-                <div class="diagram-multilevel-expand-option-dialog"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
+    <div id="content"></div>
 </body>
 </html>
