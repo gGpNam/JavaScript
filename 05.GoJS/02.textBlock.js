@@ -69,7 +69,7 @@ $(function() {
         initNodeTemplate: function() {
             this.diagram.add(
                 this.$go(go.Part, "Vertical",
-                         this.$go(go.TextBlock, { text: "a Text Block"}),
+                         this.$go(go.TextBlock, { text: "memset(& cond1,'\0',sizeof(  & cond1 ))"}),
                          this.$go(go.TextBlock, { text: "a Text Block", stroke: "red"}),
                          this.$go(go.TextBlock, { text: "a Text Block", background: "lightblue" }),
                          this.$go(go.TextBlock, { text: "a Text Block", font: "bold 14pt serif" })

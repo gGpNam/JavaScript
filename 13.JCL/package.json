@@ -1,0 +1,15 @@
+{
+  "name": "13.JCL",
+  "version": "1.0.0",
+  "description": "OBJ_TYPE_ID =130003 인경우에만 그림\r SELECT * FROM CM_TYPE WHERE TYPE_ID IN (130003, 130004, 131201, 131202)",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
