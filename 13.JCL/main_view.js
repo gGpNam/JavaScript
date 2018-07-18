@@ -5,8 +5,7 @@ var router = {
     }
 };
 
-
-// branch 에서 수정 - 2
+// branch 에서 수정 - modefied_branch
 
 $(function() {
 var MainView =  Backbone.View.extend({
