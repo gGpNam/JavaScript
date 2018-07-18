@@ -5,6 +5,9 @@ var router = {
     }
 };
 
+
+// branch 에서 수정
+
 $(function() {
 var MainView =  Backbone.View.extend({
     initialize: function() {
