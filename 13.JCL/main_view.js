@@ -5,10 +5,6 @@ var router = {
     }
 };
 
-
-// branch 에서 수정 - 2
-
-$(function() {
 var MainView =  Backbone.View.extend({
     initialize: function() {
         this.template = _.template($("#backbone-templates-flow-diagram").html());
@@ -17,6 +13,7 @@ var MainView =  Backbone.View.extend({
         this.FlowChartData = [];
         this.FlowLinkData = [];
 
+        // TODO: test
         this.blockType = {
             None: "",
             Statement: "StatementBlock",
@@ -66,15 +63,15 @@ var MainView =  Backbone.View.extend({
             || evt.propertyName === "FinishedUndo"
             || evt.propertyName === "StartingRedo"
             || evt.propertyName === "FinishedRedo")
-         console.log(evt.propertyName + (_.isEmpty(evt.Qs) || _.isEmpty(evt.Qs.name) ? "" : " - " + evt.Qs.name) + (_.isEmpty(evt.Ss) ? "" : " - " + evt.Ss));
+            console.log(evt.propertyName + (_.isEmpty(evt.Qs) || _.isEmpty(evt.Qs.name) ? "" : " - " + evt.Qs.name) + (_.isEmpty(evt.Ss) ? "" : " - " + evt.Ss));
     },
 
     nodeStype: function() {
         return [
-                new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
-                {
-                    locationSpot: go.Spot.Center,
-                }];
+            new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+            {
+                locationSpot: go.Spot.Center,
+            }];
     },
 
     layoutStyle: function() {
@@ -107,29 +104,29 @@ var MainView =  Backbone.View.extend({
         this.$go = go.GraphObject.make;
         var targetEl = this.$el.find(".diagram-content-container")[0];
         var panelOptions = {
-                gridCellSize: new go.Size(30, 30)
-            };
+            gridCellSize: new go.Size(30, 30)
+        };
         var shapeOptions = {
-                stroke: "gray",
-                interval: 1,
-                strokeWidth: 1.0,
-                strokeDashArray: [1, 30]
-            };
+            stroke: "gray",
+            interval: 1,
+            strokeWidth: 1.0,
+            strokeDashArray: [1, 30]
+        };
         var diagramOptions = {
-                initialContentAlignment: go.Spot.Center,
-                validCycle: go.Diagram.CycleNotDirected,
-                "grid": this.$go(go.Panel, go.Panel.Grid, panelOptions, this.$go(go.Shape, "LineH", shapeOptions)),
-                "grid.visible": true,
-                "ModelChanged": function(e) {
-                },
-                "undoManager.isEnabled": true,
-                "animationManager.isEnabled": false,
-                allowCopy: false,
-                allowDelete: false,
-                allowRelink: false,
-                padding: new go.Margin(this.properties.diagramPaddingTop, 5, 5, 5),
-                layout: this.layoutStyle()
-            };
+            initialContentAlignment: go.Spot.Center,
+            validCycle: go.Diagram.CycleNotDirected,
+            "grid": this.$go(go.Panel, go.Panel.Grid, panelOptions, this.$go(go.Shape, "LineH", shapeOptions)),
+            "grid.visible": true,
+            "ModelChanged": function() {
+            },
+            "undoManager.isEnabled": true,
+            "animationManager.isEnabled": false,
+            allowCopy: false,
+            allowDelete: false,
+            allowRelink: false,
+            padding: new go.Margin(this.properties.diagramPaddingTop, 5, 5, 5),
+            layout: this.layoutStyle()
+        };
         this.diagram = this.$go(go.Diagram, targetEl, diagramOptions);
         this.diagram.addModelChangedListener(this.loggingMap);
     },
@@ -165,7 +162,7 @@ var MainView =  Backbone.View.extend({
             },
             onSelectionChanged: function(e) {
                 router.currentView.contentView.diagram.clear();
-                router.currentView.contentView.diagram.model.clear()
+                router.currentView.contentView.diagram.model.clear();
                 router.currentView.contentView.FlowChartData = [];
                 router.currentView.contentView.FlowLinkData = [];
 
@@ -178,7 +175,7 @@ var MainView =  Backbone.View.extend({
         });
     },
 
-    initObjectList: function(objList) {
+    initObjectList: function() {
         this.$el.find(".diagram-object-list").dxTreeList({
             dataSource: OBJ_LIST,
             width: "100%",
@@ -197,7 +194,7 @@ var MainView =  Backbone.View.extend({
             },
             scrolling: {
                 mode: "virtual",
-                useNative: false ? true : "auto"
+                // useNative: false ? true : "auto"
             },
             columns: [{
                 dataField: "onm",
@@ -208,22 +205,22 @@ var MainView =  Backbone.View.extend({
     },
 
     getTree: function(array, parent, tree ) {
-        tree = typeof tree !== 'undefined' ? tree : [];
-        parent = typeof parent !== 'undefined' ? parent : { bid: "-1" };
-    
+        tree = typeof tree !== "undefined" ? tree : [];
+        parent = typeof parent !== "undefined" ? parent : { bid: "-1" };
+
         var children = _.filter( array, function(child){ return child.pbid == parent.bid; });
-    
+
         if( !_.isEmpty( children )  ){
             if( parent.bid === "-1" ){
-               tree = children;
+                tree = children;
             } else {
-               parent['children'] = children;
+                parent["block"] = children;
             }
-            _.each( children, function( child ){
+            _.each(children, function(child){
                 child.name = child.btp;
                 child.node = [];
                 child.edge = [];
-                router.currentView.contentView.getTree( array, child ) 
+                router.currentView.contentView.getTree( array, child );
             });
         }
         return tree;
@@ -231,12 +228,12 @@ var MainView =  Backbone.View.extend({
 
     initObjectData: function(response) {
         var fcObjectList = [];
-        
+
         _.each(response.obj, function(object) {
             if(object.poid === "-1" )
                 return;
 
-            if(!_.findWhere(response.block, {'oid' : object.oid }))
+            if(!_.findWhere(response.block, {"oid" : object.oid }))
                 return;
 
             var _object = {};
@@ -260,8 +257,8 @@ var MainView =  Backbone.View.extend({
         var blockTree = this.getTree(blockList);
 
         _.each(blockTree, function(tree) {
-            var sortedChildren = _.sortBy(tree.children, function(block) { return parseInt(block.bid)})
-            tree.children = sortedChildren;
+            var sortedBlock = _.sortBy(tree.block, function(block) { return parseInt(block.bid); });
+            tree.block = sortedBlock;
         });
 
         _.each(router.currentView.contentView.TraceStackItems, function(object){
@@ -273,12 +270,13 @@ var MainView =  Backbone.View.extend({
         if(_.isUndefined(block))
             return;
 
-        var nodes = _.filter( nodeList, function(node){ return node.bid == block.bid; });
+        var nodes = _.filter(nodeList, function(node){ return node.bid == block.bid; });
         _.each(nodes, function(node) {
+            node.ins = [];
             block.node.push(node);
         });
 
-        _.each(block.children, function(_block){
+        _.each(block.block, function(_block){
             router.currentView.contentView.fillNode(_block, nodeList);
         });
     },
@@ -295,13 +293,14 @@ var MainView =  Backbone.View.extend({
 
         _.each(block.node, function(node) {
             var text = _.filter(textList, function(text){ return text.nid === node.nid; });
-            if(text.length === 0 ) 
+            if(text.length === 0) {
                 return;
-            else 
+            } else {
                 node.txt = text[0].txt;
+            }
         });
 
-        _.each(block.children, function(_block){
+        _.each(block.block, function(_block){
             router.currentView.contentView.fillText(_block, textList);
         });
     },
@@ -336,17 +335,56 @@ var MainView =  Backbone.View.extend({
                 edge.etp = _edge.etp;
                 edge.visible = true;
                 block.edge.push(edge);
-            })
+            });
         });
 
-        _.each(block.children, function(_block){
+        _.each(block.block, function(_block){
             router.currentView.contentView.fillEdge(_block, edgeList, nodeList);
         });
     },
 
-    initLinkData: function(edgeList, nodeList) {
+    initLinkData: function(response) {
         _.each(router.currentView.contentView.TraceStackItems, function(object) {
-            router.currentView.contentView.fillEdge(object.block, edgeList, nodeList);
+            router.currentView.contentView.fillEdge(object.block, response.edge, response.node);
+        });
+    },
+
+    fillIns: function(block, instructionList) {
+        if(_.isUndefined(block))
+            return;
+
+        _.each(block.node, function(node) {
+            var insts = _.filter(instructionList, function(ins){ return ins.nid === node.nid; });
+            //var nodeType = node.ntp;
+
+            if(insts.length === 0 )
+                return;
+
+            _.each(insts, function(_ins) {
+                //console.log(_ins);
+                // var ins = {};
+                // ins.fnid = _edge.fnid;
+                // edge.fntp = nodeType;
+                // edge.fbid = fromBlock.bid;
+                // edge.tnid = _edge.tnid;
+                // edge.tbid = toBlock.bid;
+                // edge.etp = _edge.etp;
+                // edge.visible = true;
+
+                node.ins.push(_ins);
+
+                // block.edge.push(edge);
+            });
+        });
+
+        _.each(block.block, function(_block){
+            router.currentView.contentView.fillIns(_block, instructionList);
+        });
+    },
+
+    initInstructionData: function(instructionList) {
+        _.each(router.currentView.contentView.TraceStackItems, function(object) {
+            router.currentView.contentView.fillIns(object.block, instructionList);
         });
     },
 
@@ -355,37 +393,64 @@ var MainView =  Backbone.View.extend({
         this.initBlockData(response.block);
         this.initNodeData(response.node);
         this.initTextData(response.text);
-        this.initLinkData(response.edge, response.node);
+        this.initLinkData(response);
+        this.initInstructionData(response.ins);
     },
 
     // GOTO: makeStepData 스탭 테이터 생성
-    makeStepData: function(response) {
-        var orgRootBlock = _.find(this.TraceStackItems, function(object) { return object.block.pbid == "-1" }).block;
-        
+    makeStepData: function() {
+        var orgRootBlock = _.find(this.TraceStackItems, function(object) { return object.block.pbid == "-1"; }).block;
+
         var rootFCBlock = [];  // FCJCLJobData;
         rootFCBlock.id = orgRootBlock.bid;
         rootFCBlock.pbid = orgRootBlock.pbid;
         rootFCBlock.btp = orgRootBlock.ptp;
-        rootFCBlock.child = [];
+        rootFCBlock.children = [];
 
+        this.FCBlockData.push(rootFCBlock);
 
-        _.each(orgRootBlock.children, function(childBlock) {
+        _.each(orgRootBlock.block, function(childBlock) {
+            var stepData = {};  //  FCJCLStepData
+            var execData = {};
+
+            stepData.DDList = [];
 
             if(childBlock.btp.indexOf("LOOP_EXEC") > -1) {
-                var stepData = [];  //  FCJCLStepData
-                stepData.bid = childBlock.sln;
+                stepData.bid = childBlock.bid;
+                stepData.pbid = childBlock.pbid;
+                stepData.onm = childBlock.onm; // childBlock.NodeList[0].OBJ_NAME
+                stepData.sln = childBlock.sln;
                 stepData.eln = childBlock.sln;
-                stepData.execPgmNm = "????";
-
-                // rootFCBlock  push 
                 
+                stepData.ExecPgmNm = "????";
+                // TODO: instructionType setting
+                stepData.instructionType = "????";
+                // TODO: ExecuteData setting
+                stepData.ExecuteData = [];
+
+                execData = {};
+                execData.nid = childBlock.node[0].nid;
+                execData.bid = childBlock.bid;
+                execData.bnm = childBlock.bnm;
+                execData.ExecPgmNm = stepData.ExecPgmNm;
+
+                //execData.StartLineNumber = stepData.StartLineNumber;
+                //execData.EndLineNumber = stepData.EndLineNumber;
+                //execData.IsConnectedCobolPgm = childBlock.NodeList[0].PROGRAM_YN == "Y";
+                //execData.ObjectId = childBlock.NodeList[0].OBJ_ID;
+                //execData.Dpd_src_id = childBlock.NodeList[0].T_SRC_ID;  // 실제 대상 소스 exec 의 경우 cobol 의 SRC ID
+                //execData.Dpd_src_name = childBlock.NodeList[0].T_SNAME;
+                //execData.Dpd_type_id = childBlock.NodeList[0].T_TYPE_ID;
+
+                stepData.ExecuteData = execData;
+
+                rootFCBlock.children.push(stepData);
+                router.currentView.contentView.makeExecData(stepData);
             } else if (childBlock.btp.indexOf("StatementBlock") > -1) {
 
                 var orgJobNode = null;
 
                 _.each(childBlock.child, function(item) {
-
-
                     console.log(item);
 
                     if(item.btp.indexOf("JOB[")) {
@@ -397,19 +462,192 @@ var MainView =  Backbone.View.extend({
                 if(_.isNull(orgJobNode)) {
                     return;
                 }
+
+                stepData.bid = childBlock.bid;
+                stepData.pbid = childBlock.pbid;
+                stepData.onm = childBlock.onm;
+                stepData.sln = orgJobNode.sln;
+                stepData.eln = orgJobNode.eln;
+
+                // if (childBlock.NodeList[1].EdgeList.Count > 0)
+
+                execData.nid = childBlock.node[0].nid;
+                execData.bid = childBlock.bid;
+                execData.bnm = childBlock.bnm;
+                execData.ExecPgmNm = stepData.ExecPgmNm;
+
+                rootFCBlock.children.push(stepData);
+                router.currentView.contentView.makeExecData(stepData);
             }
 
-            // TODO: SORT
+        // TODO: SORT
         });
+    
+
+    // FCBlockData 에 트리로 된 데이터를 채워야 한다....
+
+    },
+
+    
+    getChild: function(element, pbid) {
+        if(element.pbid == pbid) {
+            return element;
+
+        } else if ( element.block != null) {
+            var i;
+            var result = null;
+            for(i = 0; result == null && i < element.block.length; i++) {
+                result = router.currentView.contentView.getChild(element.block[i], pbid);
+            }
+            return result;
+        }
+        return null;
+    },
+
+    getChildBlock: function(pbid) {
+        var result = [];
+
+        _.filter(router.currentView.contentView.TraceStackItems, function(object) {
+            var childBlocks = router. currentView.contentView.getChild(object.block, pbid);
+
+            if(!_.isUndefined(childBlocks)) {
+                result = childBlocks;
+                return;
+            }
+            
+        });
+        return result;
+    },
+
+    makeDsnData: function(id, pbid, dsnName, strDataSourceType) {
+        var dsnData = {};
+        dsnData.DSNList = [];
+        dsnData.id = id;
+        dsnData.pbid = pbid;
+        dsnData.dsnName = dsnName;
         
+        if(strDataSourceType == "STREAM") {
+            dsnData.dataSourceType = this.DataSourceType.STREAM;
+        } else if (strDataSourceType == "STREAM") {
+            dsnData.dataSourceType = this.DataSourceType.DSN;
+        } else if (strDataSourceType == "STREAM") {
+            dsnData.dataSourceType = this.DataSourceType.INSTREAM;
+        }
 
-        // FCBlockData 에 트리로 된 데이터를 채워야 한다....
+        return dsnData;
+    },
 
+    CutPrefix: function(s, prefix) {
+        if(s.indexOf(prefix) > -1) {
+            //return s.Substring(prefix.Length).Trim();
+            return s;
+        }
+        return s;
+    },
+
+    makeExecData: function(stepData) {
+        console.log("STEP BID = " + stepData.bid);
+
+        var childBlocks = this.getChildBlock(stepData.bid);
+
+        _.each(childBlocks.node, function(node) {
+            
+            var typePrefix = "";
+            if(node.ntp.indexOf("DD[") > -1) {
+                typePrefix = "DD";
+            } else if (node.ntp.indexOf("DD_ASSIGN[") > -1) {
+                typePrefix = "DD";
+            } else if (node.ntp.indexOf("DD_FILECMD[") > -1) {
+                typePrefix = "DD";
+            } else if (node.ntp.indexOf("DD_DSN[") > -1) {
+                typePrefix = "DD_DSN";
+            } else if (node.ntp.indexOf("DD_INSTREAM[") > -1) {
+                typePrefix = "DD_INSTREAM";
+            }
+
+            if(typePrefix.length > 0) {
+                var ddData = [];
+                ddData.id = node.nid;
+                ddData.pbid = stepData.bid;
+                ddData.onm = node.onm;
+                ddData.ddtype = typePrefix;
+                ddData.sln = node.sln;
+                ddData.eln = node.eln;
+                // ddData.CRUD = item.CRUD;
+                // ddData.IsConnectedCobolPgm = item.PROGRAM_YN == "Y";
+                // ddData.IsConnectedEmptyExec = stepData.ExecData.ExecPgmType == ExecPgmType.Empty;
+                ddData.oid = node.oid;
+
+                // ddData.Dpd_src_id = item.T_SRC_ID;  // 실제 대상 소스 dd 의 경우 dd 의 SRC ID
+                // ddData.Dpd_src_name = item.T_SNAME;
+                // ddData.Dpd_type_id = item.T_TYPE_ID;
+
+                stepData.DDList.push(ddData);
+
+                var seq = 0;
+                _.each(node.ins, function(ins) {
+                    var dsnData = null;
+                    if(ins.itp == "1300003" || ins.itp == "1312004") {
+                        dsnData = router.currentView.contentView.makeDsnData(ddData.id + "-" + seq, ddData.id, ins.objectId, "DSN");
+                        ddData.DSNList.push(dsnData);
+                        dsnData.sln = ddData.sln;
+                        dsnData.eln = ddData.eln;
+
+                        // dsnData.Dpd_src_id = instructionItem.T_SRC_ID;  // 실제 대상 소스 dd 의 경우 dd 의 SRC ID
+                        // dsnData.Dpd_src_name = instructionItem.T_SNAME;
+                        // dsnData.Dpd_type_id = instructionItem.T_TYPE_ID;
+
+                        seq++;
+                    } else if (ins.itp == "1311566" || ins.itp == "1312001") {
+                        dsnData = router.currentView.contentView.makeDsnData(ddData.id + "-" + seq, ddData.id, ins.objectId, "INSTREAM");
+                        ddData.DSNList.push(dsnData);
+                        dsnData.sln = ddData.sln;
+                        dsnData.eln = ddData.eln;
+                        seq++;
+                    } else if (ins.itp == "1311514") {
+                        dsnData = router.currentView.contentView.makeDsnData(ddData.id + "-" + seq, ddData.id, ins.objectId, "INSTREAM");
+                        ddData.DSNList.push(dsnData);
+                        dsnData.sln = ddData.sln;
+                        dsnData.eln = ddData.eln;
+                        seq++;
+                        // if (node.Text.Length > 0)
+                        // {
+                        //     dsnData.DsnName = CutPrefix(item.Text, "//" + ddData.DdName + " DD");
+                        // }
+                    }
+                });
+
+                if (node.ins.Count == 0) {
+                    // TODO: DSNList
+                    var dsnData = router.currentView.contentView.makeDsnData(
+                        ddData.id + "-" + seq,
+                        ddData.id,
+                        router.currentView.contentView.CutPrefix(node.text, "//" + ddData.DdName + " DD"),
+                        "STREAM");
+                    ddData.DSNList.push(dsnData);
+                    dsnData.sln = ddData.sln;
+                    dsnData.eln = ddData.eln;
+
+                    // if (node.Text.IndexOf("DD SYSOUT=*") > 0)
+                    // {
+                    //     ddData.DdSubIOType = "SYSOUT";
+                    // }
+                }
+
+                // TODO: ddData.DSNList.Sort
+            }
+        });
+
+        // TODO: stepData.DDList.Sort
+    },
+
+    makeJobData: function() {
+        this.makeStepData();
     },
 
     initNode: function() {
         this.generateData(DATA);
-        this.makeStepData(DATA);
+        this.makeJobData();
         this.initTraceStackList();
         this.initObjectList();
         this.initModel();
@@ -430,7 +668,7 @@ var MainView =  Backbone.View.extend({
     },
 
     initContextMenu: function() {
-    
+
     },
 
     findObject: function(objectId) {
@@ -439,7 +677,7 @@ var MainView =  Backbone.View.extend({
 
     getBlockType: function(blockTypeName) {
         if(_.contains(router.currentView.contentView.blockType, blockTypeName)) {
-            return _.find(router.currentView.contentView.blockType, function(name) { return name === blockTypeName });
+            return _.find(router.currentView.contentView.blockType, function(name) { return name === blockTypeName; });
         } else {
             return router.currentView.contentView.blockType.Statement;
         }
@@ -447,14 +685,14 @@ var MainView =  Backbone.View.extend({
 
     getNodeType: function(nodeType) {
         switch(nodeType) {
-            case "_START": 
-                return router.currentView.contentView.nodeType.StartJoint;
-            case "_END":
-                return router.currentView.contentView.nodeType.EndJoint;
-            case "STBLOCK_START":
-                return router.currentView.contentView.nodeType.StartJoint;
-            case "STBLOCK_END":
-                return router.currentView.contentView.nodeType.EndJoint;
+        case "_START":
+            return router.currentView.contentView.nodeType.StartJoint;
+        case "_END":
+            return router.currentView.contentView.nodeType.EndJoint;
+        case "STBLOCK_START":
+            return router.currentView.contentView.nodeType.StartJoint;
+        case "STBLOCK_END":
+            return router.currentView.contentView.nodeType.EndJoint;
         }
     },
 
@@ -496,7 +734,7 @@ var MainView =  Backbone.View.extend({
         _.each(object.block.node, function(node) {
             var type = router.currentView.contentView.getNodeType(node.ntp);
             if(type === router.currentView.contentView.nodeType.StartJoint ||
-               type === router.currentView.contentView.nodeType.EndJoint) {
+            type === router.currentView.contentView.nodeType.EndJoint) {
                 return;
             } else {
                 router.currentView.contentView.addNodeCell(node);
@@ -523,10 +761,10 @@ var MainView =  Backbone.View.extend({
         router.currentView.contentView.addBlockCell(block);
 
         _.each(block.node, function(node) {
-            var nodeType = router.currentView.contentView.getNodeType(node.ntp); 
+            var nodeType = router.currentView.contentView.getNodeType(node.ntp);
             if(nodeType === router.currentView.contentView.nodeType.StartJoint ||
-               nodeType === router.currentView.contentView.nodeType.EndJoint)
-               return;
+            nodeType === router.currentView.contentView.nodeType.EndJoint)
+                return;
             router.currentView.contentView.addNodeCell(node);
         });
 
@@ -534,7 +772,7 @@ var MainView =  Backbone.View.extend({
             router.currentView.contentView.makeSubBlock(childBlock);
         });
 
-        //router.currentView.contentView.makeStatementLink(block);
+    //router.currentView.contentView.makeStatementLink(block);
     },
 
     addBlockCell: function(block) {
@@ -549,30 +787,29 @@ var MainView =  Backbone.View.extend({
         router.currentView.contentView.FlowChartData.push(blockCell);
     },
 
-    
+
     // #endregion
 
     // #region initTemplate
 
     initNodeTemplate: function() {
         var stateBlockTemplate = this.$go(go.Node, "Auto",
-                                    
-                                    this.nodeStype(),
-                                    this.$go(go.Shape, "RoundedRectangle", 
-                                            {
-                                                //fill: "transparent",
-                                                fill: "transparent",
-                                                minSize: new go.Size(150, 20)
-                                            }),
-                                    this.$go(go.TextBlock,
-                                            {
-                                                margin: 5,
-                                                stroke: "black",
-                                                isMultiline: true,
-                                                maxSize: new go.Size(200, 100),
-                                            },
-                                            new go.Binding("text", "name"))
-                                    );
+            this.nodeStype(),
+            this.$go(go.Shape, "RoundedRectangle",
+                {
+                    //fill: "transparent",
+                    fill: "transparent",
+                    minSize: new go.Size(150, 20)
+                }),
+            this.$go(go.TextBlock,
+                {
+                    margin: 5,
+                    stroke: "black",
+                    isMultiline: true,
+                    maxSize: new go.Size(200, 100),
+                },
+                new go.Binding("text", "name"))
+        );
         var templmap = new go.Map("string", go.Node);
         templmap.add("", stateBlockTemplate);
         this.diagram.nodeTemplateMap = templmap;
@@ -585,27 +822,26 @@ var MainView =  Backbone.View.extend({
 
     initGroupTemplate: function() {
         var defaultGroupTemplate = this.$go(go.Group, "Auto",
-                                    {
-                                        layout: this.layoutStyle(),
-                                        contextClick: function(e, node) {
-                                        },
-                                        contextMenu: this.$go(go.Adornment)
-                                    },
-                                    this.$go(go.Shape, "RoundedRectangle",
-                                                { parameter1: 10, fill: "rgba(128,128,128,0.13)" }),
-                                    this.$go(go.Panel, "Vertical",  { defaultAlignment: go.Spot.Left },
-                                                this.$go(go.Panel, "Horizontal",
-                                                        { defaultAlignment: go.Spot.Top  },
-                                                        this.$go(go.TextBlock, 
-                                                                { 
-                                                                    font: this.properties.defaultFont,
-                                                                    wrap: go.TextBlock.WrapFit,
-                                                                    visible: false,
-                                                                },
-                                                                new go.Binding("text", "cid"))),
-                                            this.$go(go.Placeholder,
-                                                        { padding: new go.Margin(0, 10), alignment: go.Spot.Center })));
-
+            {
+                layout: this.layoutStyle(),
+                contextClick: function() {
+                },
+                contextMenu: this.$go(go.Adornment)
+            },
+            this.$go(go.Shape, "RoundedRectangle",
+                { parameter1: 10, fill: "rgba(128,128,128,0.13)" }),
+            this.$go(go.Panel, "Vertical",  { defaultAlignment: go.Spot.Left },
+                this.$go(go.Panel, "Horizontal",
+                    { defaultAlignment: go.Spot.Top  },
+                    this.$go(go.TextBlock,
+                        {
+                            font: this.properties.defaultFont,
+                            wrap: go.TextBlock.WrapFit,
+                            visible: false,
+                        },
+                        new go.Binding("text", "cid"))),
+                this.$go(go.Placeholder,
+                    { padding: new go.Margin(0, 10), alignment: go.Spot.Center })));
 
         var groupTemplateMap = new go.Map("string", go.Group);
         groupTemplateMap.add(this.DataSourceType.Unknown, defaultGroupTemplate);
@@ -660,7 +896,9 @@ var MainView =  Backbone.View.extend({
     }
 });
 
-var MainView = new MainView();
-router.currentView.contentView = MainView;
-$("#content").append(MainView.render().el);
+
+$(document).ready(function() {
+    var view = new MainView();
+    router.currentView.contentView = view;
+    $("#content").append(view.render().el);
 });

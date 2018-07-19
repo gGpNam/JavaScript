@@ -151,7 +151,7 @@ var DATA = {
         "oid": "",
         "pgm_yn": "N",
         "crud": "",		
-	}, {
+    }, {
         "bid": "7",
         "nid": "p18",
         "ntp": "DD_INSTREAM[SYSLIN]",
@@ -162,7 +162,7 @@ var DATA = {
         "oid": "3703000010",
         "pgm_yn": "N",
         "crud": "",
-	}, {
+    }, {
         "bid": "7",
         "nid": "p17",
         "ntp": "DD_DSN[IOFLAG:R][SYSLIB]",
@@ -173,7 +173,7 @@ var DATA = {
         "oid": "3703000009",
         "pgm_yn": "N",
         "crud": "R",
-	}, {
+    }, {
         "bid": "7",
         "nid": "p16",
         "ntp": "DD_DSN[IOFLAG:RWU][SYSLMOD]",
@@ -635,4 +635,4 @@ var DATA = {
         "nid": "p23",
         "txt": "//SYSPRINT DD SYSOUT=*"
     }]
-}
+};

@@ -3,10 +3,9 @@ var router = {
         contentView: {
         }
     }
-}
+};
 
-$(function() {
-var FlowDiagramView =  Backbone.View.extend({
+var MainView =  Backbone.View.extend({
     initialize: function() {
         this.FlowChartTreeData = [];
     },
@@ -23,7 +22,7 @@ var FlowDiagramView =  Backbone.View.extend({
             gryn: "Y",
             usr: null,
             edit: "Y"
-        }
+        };
 
         newList.push(root_item);
 
@@ -38,9 +37,10 @@ var FlowDiagramView =  Backbone.View.extend({
 
     initComponents: function() {
         
-        // $(".diagram-content-container").dxTextBox({
-        //     value: "asd"
-        // });
+        
+        $(".diagram-content-container").dxTextBox({
+            value: "asd"
+        });
 
         var dummyList = [
             {
@@ -57,7 +57,7 @@ var FlowDiagramView =  Backbone.View.extend({
                 gryn: "Y",
                 usr: null,
                 edit: "Y"
-            }]
+            }];
 
         var sortedList = this.sortTetst(dummyList);
         
@@ -71,9 +71,9 @@ var FlowDiagramView =  Backbone.View.extend({
         return this;
     }
 });
-    
-    var FlowDiagramView = new FlowDiagramView();
-    router.currentView.contentView = FlowDiagramView;
 
-    FlowDiagramView.render();
+$(document).ready(function() {
+    var view = new MainView();
+    router.currentView.contentView = view;
+    $("#content").append(view.render().el);
 });
