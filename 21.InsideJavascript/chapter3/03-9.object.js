@@ -1,16 +1,16 @@
 ///
-/// exampke 3-9 객체 프로퍼티 삭제
+/// exampke 3-9 동일한 객체를 참조하는 두 변수 objA와 objB
 ///
 
-var foo = {
-    name: "foo",
-    nickname: "babo"
+var objA = {
+    var: 40
 }
 
-console.log(foo.nickname);          // (출력값 ) babo
-delete foo.nickname;                // nickname 프로퍼티 삭제
-console.log(foo.nickname);          // (출력값 ) undefined
-console.log("=============================");
+var objB = objA;
 
-delete foo;                         // (출력값 ) foo 객체 삭제 시도
-console.log(foo.name)               // (출력값 ) foo
+console.log(objA.var);              // (출력값 ) 40
+console.log(objB.var);              // (출력값 ) 40
+
+objB.var = 50;
+console.log(objA.var);              // (출력값 ) 50
+console.log(objB.var);              // (출력값 ) 50
