@@ -1,0 +1,48 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es6": true,
+        "jquery": true
+    },
+    "globals": {
+        "Backbone": false,
+        "_": false,
+        "go": false,
+        "GTSaasCM": false,
+        "MainView": false,
+        "OBJ_LIST": false,
+        "DATA": false
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 5
+    },
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ],
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "quotes": [
+            "error",
+            "double"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-console" : "off",
+        "no-constant-condition": [
+            "error", { "checkLoops": false }
+        ],
+        "no-trailing-spaces": [
+            "error",
+             { "skipBlankLines": true }
+        ]
+        
+    }
+}

@@ -1,0 +1,20 @@
+.cm-search-line-container {
+    height: 32px;
+    padding-bottom: 4px;
+}
+
+.cm-search-keyword-label {
+    width: 120px;
+    line-height: 28px;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: 700;
+    color: #959595;
+    background-color: #EEF1F7;
+    margin-right: 5px;
+}
+
+.cm-search-keyword-content {
+    width: 250px;
+    display: block;
+}

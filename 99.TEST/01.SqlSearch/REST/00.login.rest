@@ -1,0 +1,20 @@
+@hostname = 127.0.0.1
+@port = 80
+@host = {{hostname}}:{{port}}
+@username = cmadmin
+@password = cmadmin
+
+## UserDao.java
+@sid = 1073
+
+
+### login
+POST http://{{host}}/rest/user/signin
+dataType: "json"
+content-type: application/json
+
+{
+    "id": "cmadmin",
+    "pwd": "cmadmin"
+}
+

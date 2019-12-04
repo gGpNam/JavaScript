@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/main.css">
+	
+	<script type="text/javascript" src="lib/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/underscore/1.8.3/underscore.min.js"></script>
+    
+    <!-- Nanum Gothic -->
+    <link rel='stylesheet' type="text/css" href='fonts/nanumgothic/nanumgothic.css'>
+
+    <!-- fontawesome -->
+    <link rel='stylesheet' type="text/css" href='fonts/font-awesome-5.7.2/css/all.css'>
+
+    <!-- DevExtreme Begin --> 
+    <link type="text/css" rel="stylesheet" href="lib/devextreme/18.2.8/css/dx.common.css" />
+    <link type="text/css" rel="stylesheet" href="lib/devextreme/18.2.8/css/dx.spa.css" />
+    <link type="text/css" rel="stylesheet" href="lib/devextreme/18.2.8/css/dx.light.css" />
+    
+    <script type="text/javascript" src="lib/devextreme/18.2.8/js/dx.all.js"></script>
+    <!-- DevExtreme End -->  
+
+    <script type="text/javascript" src="lib/backbone/1.3.3/backbone.min.js"></script>
+
+
+    <!-- build:libjs gojs/1.7.27/go.js -->
+    <!--<script type="text/javascript" src="lib/gojs/1.7.27/go-debug.js"></script> -->
+    <!-- endbuild -->
+
+    <!-- Template Begin -->
+    <script id="backbone-templates-sql-search" type="text/template">
+        <div class="cm-search-result-table-box">
+            <div class="rect" data-options="dxItem: {ratio: 1}">
+                <div class="cm-default-table cm-default-scroll-table cm-search-stack-grid"></div>
+            </div>
+            <div class="rect" data-options="dxItem: {ratio: 1}">
+                <div class="cm-default-table cm-default-scroll-table cm-search-stack-result-grid"></div>
+            </div>
+        </div>
+    </script>
+    <!-- Template End -->
+
+    <!-- Data Begin-->
+    <script type="text/javascript" src="DATA/10.PROJECT.js"></script>
+    <!-- Data End -->
+
+    <!-- Common Begin-->
+    <script type="text/javascript" src="gtsaascm.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+    <!-- Common End -->
+
+    <!--
+    <script type="text/javascript" src="main_view.js"></script>
+    -->
+
+    <!-- result view -->
+    <script type="text/javascript" src="result_view.js"></script>
+
+    <!--<script type="text/javascript" src="js/backbone/views/project/project_list_view.js"></script>-->
+
+</head>
+<body>
+    <div id="content"></div>
+</body>
+</html>

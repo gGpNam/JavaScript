@@ -4,11 +4,12 @@
     // 자세한 내용을 보려면 https://go.microsoft.com/fwlink/?linkid=830387을(를) 방문하세요.
     "version": "0.2.0",
     "configurations": [
+        
         {
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "file:///E:/JavaScript/03.DevExtreme/00.DATA-GRID/15.Master-Detail/index.html",
+            "url": "file:///E:/JavaScript/99.TEST/01.SqlSearch/index.html",
             "webRoot": "${workspaceRoot}/lib/"
         }
     ]

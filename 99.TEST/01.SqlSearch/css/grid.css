@@ -1,0 +1,134 @@
+.default-table-mouseover-record {
+    background-color: #6AC4EA;
+    color: #FFFFFF;
+}
+
+.default-table-mouseover-cell {
+    background-color: #3AA0CC !important;
+    color: #FFFFFF;
+}
+
+.default-table-highlight-record {
+    background-color: #7bc87b;
+    color: #FFFFFF;
+}
+
+.default-table-highlight-cell {
+    background-color: #4eb14e !important;
+    color: #FFFFFF;
+}
+
+.cm-default-table input,
+.cm-default-table textarea,
+.cm-default-table .dx-placeholder,
+.cm-default-table .dx-toolbar-items-container input,
+.cm-default-table .dx-toolbar-items-container .dx-placeholder,
+.cm-default-table .dx-toolbar-items-container .dx-toolbar-item .dx-item-content,
+.cm-default-table .dx-datagrid-pager,
+.cm-default-table .dx-datagrid-pager .dx-page-size,
+.cm-default-table .dx-datagrid-pager .dx-info,
+.cm-default-table .dx-datagrid-pager .dx-page {
+    font-size: 12px;
+}
+
+.cm-default-table .dx-toolbar-items-container .dx-placeholder {
+    line-height: 20px;
+}
+
+.cm-default-table .dx-toolbar-items-container .dx-icon::before {
+    font-size: 17px;
+}
+
+.cm-default-table .cm-toolbar-item {
+    margin-right: 10px;
+}
+
+.cm-default-table .cm-toolbar-item:last-child {
+    margin-right: 0px;
+}
+
+.cm-default-table .dx-datagrid-headers .dx-datagrid-table .dx-row>td,
+.cm-default-table .dx-datagrid-headers .dx-datagrid-text-content,
+.cm-default-table .dx-datagrid-header-panel .dx-group-panel-message,
+.cm-default-table .dx-datagrid-header-panel .dx-group-panel-item,
+.cm-default-tree-list .dx-treelist-headers .dx-treelist-table .dx-row>td {
+    font-weight: 700;
+    font-size: 12px;
+    text-align: center !important;
+}
+
+.cm-default-table .dx-datagrid-content .dx-row>td,
+.cm-default-tree-list .dx-treelist-content .dx-row>td {
+    font-size: 12px !important;
+    vertical-align: middle;
+}
+
+.cm-default-tree-list .dx-treelist-rowsview .dx-treelist-expanded span,
+.cm-default-tree-list .dx-treelist-rowsview .dx-treelist-collapsed span {
+    font: 14px/1 DXIcons !important;
+}
+
+.cm-default-table .dx-datagrid-headers .dx-row.dx-header-row:first-child,
+.cm-default-tree-list .dx-treelist-headers .dx-row.dx-header-row {
+    border-color: #8898B9;
+    border-style: solid;
+    border-width: 3px 0 0 0;
+    background-color: #EEF1F7;
+}
+
+.cm-default-table {
+    min-width: 100%;
+}
+
+.cm-default-table .dx-scrollable-wrapper,
+.cm-default-table .dx-scrollable-container {
+    height: auto;
+}
+
+.cm-default-table .dx-scrollable-container,
+.cm-default-table .dx-scrollable-content {
+    min-height: auto;
+}
+
+.cm-default-scroll-table .dx-scrollable-wrapper,
+.cm-default-scroll-table .dx-scrollable-container,
+.cm-default-tree-list .dx-scrollable-wrapper,
+.cm-default-tree-list .dx-scrollable-container {
+    height: 100%;
+}
+
+.cm-default-scroll-table .dx-scrollable-container,
+.cm-default-scroll-table .dx-scrollable-content,
+.cm-default-tree-list .dx-scrollable-container,
+.cm-default-tree-list .dx-scrollable-content {
+    min-height: 100%;
+}
+
+.cm-default-table .cm-datagrid-input-fixed-cell {
+    background-color: #F6F8FB;
+}
+
+.cm-default-table .dx-freespace-row,
+.cm-default-scroll-table .dx-freespace-row,
+.cm-default-tree-list .dx-freespace-row {
+    display: none !important;
+}
+
+.cm-default-pivotgrid .dx-pivotgrid-container td {
+    font-family: Arial, Meiryo, 'Nanum Gothic';
+    font-size: 12px !important;
+    white-space: nowrap !important;
+}
+
+.cm-default-pivotgrid .dx-pivotgrid-container .dx-area-description-cell,
+.cm-default-pivotgrid .dx-pivotgrid-container .dx-area-column-cell {
+    background-color: #EEF1F7 !important;
+}
+
+.cm-default-pivotgrid .dx-pivotgrid-container .dx-pivotgrid-border .dx-filter-header {
+    border-top: 3px solid #8898B9;
+}
+
+.cm-default-scroll-table .dx-datagrid-headers {
+    background: #EEF1F7;
+}

@@ -1,0 +1,108 @@
+html, body {
+    width: 100%;
+    min-width: 1100px;
+    height: auto !important;
+}
+
+.cm-font,
+.dx-field input,
+.dx-field textarea,
+.dx-field .dx-field-label,
+.dx-widget,
+.dx-texteditor-input,
+.dx-checkbox-text,
+.dx-switch-on, .dx-switch-off,
+.dx-menu-items-container .dx-menu-item-content span {
+    font-family: Arial, Meiryo, 'Nanum Gothic' !important;
+    font-size: 12px;
+}
+
+.dx-overlay-content .dx-texteditor-buttons-container div {
+	font: 14px/1 DXIcons !important;
+}
+
+.cm-float-left {
+    float: left;
+}
+
+.cm-float-right {
+    float: right;
+}
+
+.cm-hide {
+    display: none !important;
+}
+
+.cm-path-link-separator::before,
+.cm-path-link-separator::after {
+    content: "\00a0";
+}
+
+input[type=text]::-ms-clear {
+    display: none;
+}
+
+.dx-popup-content .dx-scrollview-content .dx-list-select-all {
+    display: table;
+}
+
+.dx-popup-contnet .dx-scrollable-wrapper {
+    height: 100%;
+}
+
+.dx-button-content .dx-icon.fa {
+    width: auto !important;
+}
+
+.cm-default-icon-btn,
+.cm-default-icon-btn.dx-state-active,
+.cm-default-icon-btn.dx-state-focused,
+.cm-default-icon-btn.dx-state-hover {
+    min-width: 36px;
+    background-color: #FFFFFF;
+    border-color: #8898B9;
+    border-width: 2px;
+    color: #333333;
+}
+
+.cm-default-icon-btn.dx-state-hover {
+    background-color: #8898B9;
+    color: #FFFFFF;
+}
+
+.cm-default-icon-btn.cm-default-icon-btn-selected,
+.cm-default-icon-btn.cm-default-icon-btn-selected.dx-state-active,
+.cm-default-icon-btn.cm-default-icon-btn-selected.dx-state-focused,
+.cm-default-icon-btn.cm-default-icon-btn-selected.dx-state-hover {
+    background-color: #165797;
+    color: #FFFFFF;
+}
+
+.cm-default-icon-btn .dx-button-content .dx-icon {
+    color: inherit;
+}
+
+.cm-dashboard-chart text {
+	font-family: Arial, Meiryo, 'Nanum Gothic' !important;
+}
+
+.cm-dashboard-chart .dxc-title text {
+	font-size: 16px !important;
+	font-weight: 700 !important;
+	fill: #00008B !important;
+}
+
+.cm-dashboard-chart {
+	height: 200px;
+    border: 5px solid #F5F5F5;
+    outline: 1px solid #E9E9E9;
+    padding: 10px;
+}
+
+.dx-link-edit {
+    border: 0px;
+}
+
+.dx-link-delete {
+    border: 0px;
+}

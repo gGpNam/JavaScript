@@ -1,0 +1,19 @@
+@charset "utf-8";
+@font-face {
+  font-family: 'Nanum Gothic';
+  font-style: normal;
+  font-weight: normal;
+  src: url('/fonts/nanumgothic/NanumGothic-Regular.eot');
+  src: url('/fonts/nanumgothic/NanumGothic-Regular.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/nanumgothic/NanumGothic-Regular.woff2') format('woff2'),
+       url('/fonts/nanumgothic/NanumGothic-Regular.woff') format('woff');
+}
+@font-face {
+  font-family: 'Nanum Gothic';
+  font-style: normal;
+  font-weight: bold;
+  src: url('/fonts/nanumgothic/NanumGothic-Bold.eot');
+  src: url('/fonts/nanumgothic/NanumGothic-Bold.eot?#iefix') format('embedded-opentype'),
+       url('/fonts/nanumgothic/NanumGothic-Bold.woff2') format('woff2'),
+       url('/fonts/nanumgothic/NanumGothic-Bold.woff') format('woff');
+}

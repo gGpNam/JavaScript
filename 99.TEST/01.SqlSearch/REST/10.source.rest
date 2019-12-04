@@ -1,0 +1,12 @@
+@host = 127.0.0.1
+## UserDao.java
+@sid = 1073
+
+
+### GET SOURCE
+
+GET http://{{host}}/rest/source/code/{{sid}}
+
+
+
+

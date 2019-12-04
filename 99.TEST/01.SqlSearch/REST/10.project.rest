@@ -1,0 +1,18 @@
+@host = 127.0.0.1
+
+### JAVA PROJECT
+@pid = 3
+
+### GET Projects
+
+GET http://{{host}}/rest/project/project
+
+
+### GET Project
+
+GET http://{{host}}/rest/project/project/{{pid}}
+
+
+### GET Project summary
+
+GET http://{{host}}/rest/project/summary/{{pid}}
